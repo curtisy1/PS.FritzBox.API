@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <Authors>Patrick Schubert</Authors>
     <Company />
     <Product>PS Fritz!Box API</Product>
@@ -24,7 +24,7 @@ Fixed reading WANDSLInterfaceInfo</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\netstandard1.6\PS.FritzBox.API.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\net5.0\PS.FritzBox.API.xml</DocumentationFile>
   </PropertyGroup>
 
 </Project>
