@@ -1,38 +1,31 @@
-﻿using PS.FritzBox.API;
-using PS.FritzBox.API.Base;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace PS.FritzBox.API.CMD
 {
     class Program
     {
-        static Dictionary<string, ClientHandler> _clientHandlers = new Dictionary<string, ClientHandler>();
+        private static readonly Dictionary<string, ClientHandler> _clientHandlers = new();
 
-        static void Main(string[] args)
-        {
-            MainAsync(args).Wait();
-        }
-
-        static async Task MainAsync(string[] args)
+        static async Task Main(string[] args)
         {
             Console.WriteLine("Searching for devices...");
-            IEnumerable<FritzDevice> devices = await FritzDevice.LocateDevicesAsync();
+            FritzDevice[] devices = (await FritzDevice.LocateDevicesAsync()).ToArray();
 
-            if (devices.Count() > 0)
+            int deviceCount = devices.Length;
+            if (deviceCount > 0)
             {
-                Console.WriteLine($"Found {devices.Count()} devices.");
-                string input = string.Empty;
-                int deviceIndex = -1;
+                Console.WriteLine($"Found {deviceCount} devices.");
+                string input;
+                int deviceIndex;
                 do
                 {
                     int counter = 0;
-                    foreach (FritzDevice device in devices)
+                    for (int i = 0; i < deviceCount; i++)
                     {
-                        Console.WriteLine($"{counter} - {device.ModelName}");
+                        Console.WriteLine($"{i} - {devices[i].ModelName}");
                     }
                     counter++;
 

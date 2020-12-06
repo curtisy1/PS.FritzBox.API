@@ -18,12 +18,9 @@ namespace PS.FritzBox.API
         public async Task<FritzDevice> CreateDeviceAsync(IPAddress address)
         {
             var locationBuilder = new UriBuilder("http", address.ToString(), _dataQueryPort);
-            var device = new FritzDevice(address, locationBuilder.Uri);
-            var tr64Reader = new Tr64DataReader();
-
-            var tr64Data = await tr64Reader.ReadDeviceInfoAsync(device);
-
-            device.ParseTR64Desc(tr64Data.Data);
+            var device = new FritzDevice(address, locationBuilder.Uri); 
+            await Tr64DataReader.ReadDeviceInfoAsync(device);
+            
             return device;
         }
 

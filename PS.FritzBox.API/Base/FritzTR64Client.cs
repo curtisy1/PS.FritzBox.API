@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using System.Collections.Generic;
 
 namespace PS.FritzBox.API.Base
 {
@@ -83,25 +84,47 @@ namespace PS.FritzBox.API.Base
         {
             SoapClient client = new SoapClient();
 
-            SoapRequestParameters parameters = new SoapRequestParameters();
+            SoapRequestParameters parameters = new SoapRequestParameters {
+                UserName = this.ConnectionSettings.UserName,
+                Password = this.ConnectionSettings.Password,
+                Timeout = this.ConnectionSettings.Timeout,
+                RequestNameSpace = this.RequestNameSpace,
+                SoapAction = $"{this.RequestNameSpace}#{action}",
+                Action = $"{action}"
+            };
 
-            parameters.UserName = this.ConnectionSettings.UserName;
-            parameters.Password = this.ConnectionSettings.Password;
-            parameters.Timeout = this.ConnectionSettings.Timeout;
 
-            parameters.RequestNameSpace = this.RequestNameSpace;
-            parameters.SoapAction = $"{this.RequestNameSpace}#{action}";
-            parameters.Action = $"{action}";
             if (parameter != null)
                 parameters.Parameters.AddRange(parameter);
 
-            var urlBuilder = new UriBuilder(this.ConnectionSettings.BaseUrl);
-            urlBuilder.Path = this.ControlUrl;
+            var urlBuilder = new UriBuilder(this.ConnectionSettings.BaseUrl) { Path = this.ControlUrl };
             XDocument soapResult = await client.InvokeAsync(urlBuilder.Uri, parameters);
 
             this.ParseSoapFault(soapResult);
 
             return soapResult;
+        }
+        
+        internal ValueTask<IEnumerable<T>> InvokeAsync<T>(string action, params SoapRequestParameter[] parameter)
+            where T : class
+        {
+            SoapClient client = new SoapClient();
+
+            SoapRequestParameters parameters = new SoapRequestParameters {
+                UserName = this.ConnectionSettings.UserName,
+                Password = this.ConnectionSettings.Password,
+                Timeout = this.ConnectionSettings.Timeout,
+                RequestNameSpace = this.RequestNameSpace,
+                SoapAction = $"{this.RequestNameSpace}#{action}",
+                Action = $"{action}"
+            };
+
+
+            if (parameter != null)
+                parameters.Parameters.AddRange(parameter);
+
+            var urlBuilder = new UriBuilder(this.ConnectionSettings.BaseUrl) { Path = this.ControlUrl };
+            return client.InvokeAsync<T>(urlBuilder.Uri, parameters);
         }
 
         /// <summary>

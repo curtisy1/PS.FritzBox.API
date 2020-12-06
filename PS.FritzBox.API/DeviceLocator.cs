@@ -24,37 +24,27 @@ namespace PS.FritzBox.API
         /// </summary>
         /// <returns></returns>
         [Obsolete("Use FritzDevice.LocateDevicesAsync()")]
-        public async Task<ICollection<FritzDevice>> DiscoverAsync()
+        public Task<ICollection<FritzDevice>> DiscoverAsync()
         {
-            return await this.FindDevicesAsync();            
+            return this.FindDevicesAsync();            
         }
 
         /// <summary>
         /// Method to find fritz devices
         /// </summary>
         /// <returns>the fritz devices</returns>
-        private async Task<ICollection<FritzDevice>> FindDevicesAsync()
+        private Task<ICollection<FritzDevice>> FindDevicesAsync()
         {
-            List<FritzDevice> devices = new List<FritzDevice>();
-            Action<FritzDevice> callback = (device) =>
-            {
-                lock (devices)
-                {
-                    devices.Add(device);
-                }
-            };
-
-            await this.DiscoverBroadcast(callback);
-            return devices;
+            return this.DiscoverBroadcast();
         }
 
         /// <summary>
         /// Method to discover by broadcast
         /// </summary>
         /// <returns></returns>
-        private async Task DiscoverBroadcast(Action<FritzDevice> callback)
+        private async Task<ICollection<FritzDevice>> DiscoverBroadcast()
         {
-            List<Task> broadcastTasks = new List<Task>();
+            List<Task<List<FritzDevice>>> broadcastTasks = new List<Task<List<FritzDevice>>>();
             // iterate through all adapters and send multicast on 
             // valid adapters
             foreach(NetworkInterface adapter in NetworkInterface.GetAllNetworkInterfaces())
@@ -66,124 +56,79 @@ namespace PS.FritzBox.API
                     IPAddress broadcastAddress = this.GetUnicastAddress(properties);
 
                     // skip if invalid address
-                    if (broadcastAddress == null || broadcastAddress == IPAddress.None || broadcastAddress.IsIPv6LinkLocal)
+                    if (broadcastAddress == null || broadcastAddress.Equals(IPAddress.None)|| broadcastAddress.IsIPv6LinkLocal)
                         continue;
 
-                    broadcastTasks.Add(BeginSendReceiveAsync(broadcastAddress, callback));     
+                    broadcastTasks.Add(BeginSendReceiveAsync(broadcastAddress));     
                 }
-
-                await Task.WhenAll(broadcastTasks.ToArray());
             }
+            
+            return (await Task.WhenAll(broadcastTasks.ToArray()))
+                .SelectMany(f => f)
+                .Distinct()
+                .ToList();
         }
 
-        private async Task BeginSendReceiveAsync(IPAddress broadcastAddress, Action<FritzDevice> callback)
+        private async Task<List<FritzDevice>> BeginSendReceiveAsync(IPAddress broadcastAddress)
         {
-            using (UdpClient client = new UdpClient(broadcastAddress.AddressFamily))
+            using UdpClient client = new UdpClient(broadcastAddress.AddressFamily) { MulticastLoopback = false };
+            Socket socket = client.Client;
+            
+            var broadcastViaIpV4 = broadcastAddress.AddressFamily == AddressFamily.InterNetwork;
+
+            if (broadcastViaIpV4)
             {
-                List<Task> receivebroadcast = new List<Task>();
-                client.MulticastLoopback = false;
-                Socket socket = client.Client;
-
-
-                var broadcastViaIpV4 = broadcastAddress.AddressFamily == AddressFamily.InterNetwork;
-
-                if (broadcastViaIpV4)
-                {
-                    socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastInterface, broadcastAddress.GetAddressBytes());
-                }
-                else
-                {
-                    byte[] interfaceArray = BitConverter.GetBytes((int)broadcastAddress.ScopeId);
-
-                    var mcastOption = new IPv6MulticastOption(broadcastAddress, broadcastAddress.ScopeId);
-                    socket.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.MulticastInterface, interfaceArray);
-                }
-
-                socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-                socket.ReceiveBufferSize = Int32.MaxValue;
-                client.ExclusiveAddressUse = false;
-                socket.Bind(new IPEndPoint(broadcastAddress, 1901));
-
-                var broadCast = broadcastViaIpV4 ? UpnpBroadcast.CreateIpV4Broadcast() : UpnpBroadcast.CreateIpV6Broadcast();
-                if (broadcastViaIpV4)
-                {
-                    socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(broadCast.IpAdress));
-                }
-                else
-                {
-                    socket.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.AddMembership, new IPv6MulticastOption(broadCast.IpAdress, broadcastAddress.ScopeId));
-                }
-
-                await Task.WhenAll(
-                    this.ReceiveAsync(client, callback),
-                    this.BroadcastAsync(client, broadCast)
-                    );
+                socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastInterface, broadcastAddress.GetAddressBytes());
             }
+            else
+            {
+                byte[] interfaceArray = BitConverter.GetBytes((int)broadcastAddress.ScopeId);
+                socket.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.MulticastInterface, interfaceArray);
+            }
+
+            socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            socket.ReceiveBufferSize = Int32.MaxValue;
+            client.ExclusiveAddressUse = false;
+            socket.Bind(new IPEndPoint(broadcastAddress, 1901));
+
+            var broadCast = broadcastViaIpV4 ? UpnpBroadcast.CreateIpV4Broadcast() : UpnpBroadcast.CreateIpV6Broadcast();
+            if (broadcastViaIpV4)
+            {
+                socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(broadCast.IpAdress));
+            }
+            else
+            {
+                socket.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.AddMembership, new IPv6MulticastOption(broadCast.IpAdress, broadcastAddress.ScopeId));
+            }
+
+            return await this.BroadcastAsync(client, broadCast);
         }
-
-        /// <summary>
-        /// Method to receive async
-        /// </summary>
-        /// <param name="client">the udp client</param>
-        /// <returns>the result task</returns>
-        private async Task ReceiveAsync(UdpClient client, Action<FritzDevice> deviceCallback)
+        
+        private async Task ReceiveByDnsAsync()
         {
-            IPEndPoint endpoint = new IPEndPoint(IPAddress.Any, 1900);
-
-            // delay for 20 seconds
-            Task waitTask = Task.Delay(TimeSpan.FromSeconds(10));
-
-            var getDeviceInfoTasks = new List<Task<Tr64Description>>();
-
-            Dictionary<IPAddress, FritzDevice> discovered = new Dictionary<IPAddress, FritzDevice>();
-
-            var tr64DataReader = new Tr64DataReader();
-            while (!waitTask.IsCompleted)
+            bool IsLoopbackAddressValue(IPAddress ipAddress)
             {
-                var receiveTask = SafeReceiveAsync(client);
+                if (ipAddress == null)
+                    return true;
 
-                // check wat for tasks
-                Task finishedTask = await Task.WhenAny(receiveTask, waitTask);
-                if (finishedTask == receiveTask)
-                {
-                    UdpReceiveResult result = await receiveTask;
+                if (IPAddress.IsLoopback(ipAddress))
+                    return true;
 
-                    // if there is data in buffer read and pars it
-                    if (result.Buffer != null && result.Buffer.Length > 0)
-                    {
-                        string response = Encoding.ASCII.GetString(result.Buffer, 0, result.Buffer.Length);
-
-                        // create device by endpoint data
-                        FritzDevice device = await FritzDevice.ParseResponseAsync(result.RemoteEndPoint.Address, response);
-                        if (!discovered.ContainsKey(result.RemoteEndPoint.Address))
-                        {
-                            if (device != null && device.Location != null && device.Location.Scheme != "unknown")
-                            {
-                                // fetch the device info
-                                deviceCallback?.Invoke(device);
-                                getDeviceInfoTasks.Add(tr64DataReader.ReadDeviceInfoAsync(device));
-                                discovered.Add(result.RemoteEndPoint.Address, device);
-                            }
-                        }
-                    }
-                }
+                var ipAddressValue = ipAddress.ToString();
+                return string.IsNullOrEmpty(ipAddressValue) || ipAddressValue == "127.0.0.1" || ipAddressValue == "0.0.0.0" || ipAddressValue == "::1" || ipAddressValue == "::";
             }
-
-            if (getDeviceInfoTasks.Count > 0)
-            {
-               
-                foreach(var task in getDeviceInfoTasks)
-                {
-                    try
-                    {
-                        var description = await task;
-                        description.Device.ParseTR64Desc(description.Data);
-                    } catch(FritzDeviceException e)
-                    {
-                        Console.WriteLine(e.Message);
-                    }
-                }
-            }
+            
+            // TODO: Clarify if this would be okay.
+            // This only finds the gateway in most cases, so any routers in between would be ignored
+            // However for configuration, you usually want the GW router so it _should_ be fine
+            var ipAddresses = NetworkInterface.GetAllNetworkInterfaces()
+                .Where(ni => ni.SupportsMulticast
+                             && ni.OperationalStatus == OperationalStatus.Up
+                             && ni.NetworkInterfaceType != NetworkInterfaceType.Loopback)
+                .SelectMany(i => i.GetIPProperties().DnsAddresses)
+                .Distinct()
+                .Where(ipa => ipa.AddressFamily == AddressFamily.InterNetwork && !IsLoopbackAddressValue(ipa))
+                .ToList();   
         }
 
         /// <summary>
@@ -208,18 +153,48 @@ namespace PS.FritzBox.API
         /// </summary>
         /// <param name="client">the udp client</param>
         /// <param name="broadcast">The broadcast to send to the client.</param>
-        private async Task BroadcastAsync(UdpClient client, UpnpBroadcast broadcast)
+        private async Task<List<FritzDevice>> BroadcastAsync(UdpClient client, UpnpBroadcast broadcast)
         {
-            int broadcasts = 0;
-          
+            int duplicateCount = 0;
+            int iterations = 0;
+            List<IPAddress> discoveredIpAddresses = new List<IPAddress>();
+            List<FritzDevice> discoveredDevices = new List<FritzDevice>();
+
             do
             {
                 await client.SendAsync(broadcast.Content, broadcast.ContentLenght, broadcast.IpEndPoint);
-                broadcasts++;                    
 
-                await Task.Delay(TimeSpan.FromSeconds(2));
+                var result = await SafeReceiveAsync(client);
+                if (!discoveredIpAddresses.Contains(result.RemoteEndPoint.Address) && result.Buffer.Length > 0)
+                {
+                    duplicateCount = 0;
+                    discoveredIpAddresses.Add(result.RemoteEndPoint.Address);
+                    string response = Encoding.ASCII.GetString(result.Buffer, 0, result.Buffer.Length);
 
-            } while (broadcasts < 5);
+                    // create device by endpoint data
+                    FritzDevice device = await FritzDevice.ParseResponseAsync(result.RemoteEndPoint.Address, response);
+                    if (device != null && device.Location != null && device.Location.Scheme != "unknown")
+                    {
+                        try
+                        {
+                            // fetch the device info
+                            await Tr64DataReader.ReadDeviceInfoAsync(device);
+                            discoveredDevices.Add(device);
+                        } catch (FritzDeviceException e)
+                        {
+                            Console.WriteLine(e.Message);
+                        }
+                    }
+                }
+                else
+                {
+                    duplicateCount++;
+                }
+
+                iterations++;
+            } while (duplicateCount < 5 && iterations < 10);
+
+            return discoveredDevices;
         }
 
       

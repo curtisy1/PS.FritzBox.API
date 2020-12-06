@@ -45,23 +45,31 @@ namespace PS.FritzBox.API
         /// <returns></returns>
         internal static async Task<FritzDevice> ParseResponseAsync(IPAddress address, string response)
         {
-            FritzDevice device = new FritzDevice();
-            device.IPAddress = address;
+            FritzDevice device = new FritzDevice { IPAddress = address };
             device.Location = device.ParseResponseAsync(response);
 
-            var uriBuilder = new UriBuilder();
-            uriBuilder.Scheme = "http";
-            uriBuilder.Host = address.ToString();
-            uriBuilder.Port = device.Location.Port;
+            var uriBuilder = new UriBuilder {
+                Scheme = "http",
+                Host = address.ToString(),
+                Port = device.Location.Port
+            };
 
-            uriBuilder.Port = await new DeviceInfoClient(uriBuilder.Uri.ToString(), 10000).GetSecurityPortAsync();
+            var securityPort = await new DeviceInfoClient(uriBuilder.Uri.ToString(), 10000).GetSecurityPortAsync();
+            if (!securityPort.HasValue)
+            {
+                // this can happen when there's another device connected that receives broadcasts. I.e. Philips Hue Bridge
+                // since it's not a Fritz device, we can safely ignore it
+                return null;
+            }
+            
+            uriBuilder.Port = securityPort.Value;
             uriBuilder.Scheme = "https";
             device.BaseUrl = uriBuilder.ToString();
 
             if (device.Location == null)
                 return null;
-            else
-                return device;
+            
+            return device;
         }
 
         /// <summary>
@@ -74,7 +82,7 @@ namespace PS.FritzBox.API
                                                  .Skip(1)
                                                  .Select(line => line.Split(new[] { ":" }, 2, StringSplitOptions.None))
                                                  .Where(parts => parts.Length == 2)
-                .                                 ToDictionary(parts => parts[0].ToLowerInvariant().Trim(), parts => parts[1].Trim());
+                                                 .ToDictionary(parts => parts[0].ToLowerInvariant().Trim(), parts => parts[1].Trim());
 
             if (values.ContainsKey("location"))
             {
@@ -85,8 +93,8 @@ namespace PS.FritzBox.API
 
                 return uri;
             }
-            else
-                return null;
+            
+            return null;
         }
 
         /// <summary>
@@ -158,34 +166,6 @@ namespace PS.FritzBox.API
         /// Gets the base url
         /// </summary>
         public string BaseUrl { get; private set; }
-
-        /// <summary>
-        /// Method to get service client
-        /// </summary>
-        /// <typeparam name="T">type param</typeparam>
-        /// <param name="settings">connection settings</param>
-        /// <returns>the service client</returns>
-        [Obsolete("Creating service using connection settings is obsolete. Use GetServiceClient<T> without parameters. Username and password are used from FritzDevice")]
-        public async Task<T> GetServiceClient<T>(ConnectionSettings settings)
-        {
-            if (String.IsNullOrEmpty(settings.BaseUrl))
-            {
-                var uriBuilder = new UriBuilder();
-                uriBuilder.Scheme = "http";
-                uriBuilder.Host = this.IPAddress.ToString();
-                uriBuilder.Port = this.Port;
-
-                settings.BaseUrl = uriBuilder.Uri.ToString();
-                // get the security port
-                int port = await new DeviceInfoClient(settings.BaseUrl, settings.Timeout).GetSecurityPortAsync();
-
-                uriBuilder.Port = port;
-                uriBuilder.Scheme = "https";
-                settings.BaseUrl = uriBuilder.Uri.ToString();
-            }
-            
-            return (T)Activator.CreateInstance(typeof(T), settings);
-        }
 
         /// <summary>
         /// Method the get instance of service client

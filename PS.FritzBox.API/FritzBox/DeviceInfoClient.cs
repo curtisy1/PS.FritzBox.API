@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using PS.FritzBox.API.Models;
 
 namespace PS.FritzBox.API
 {
@@ -86,10 +87,9 @@ namespace PS.FritzBox.API
         /// async Method to get the security port of the device
         /// </summary>
         /// <returns>the security port</returns>
-        public async Task<UInt16> GetSecurityPortAsync()
+        public async Task<ushort?> GetSecurityPortAsync()
         {
-            XDocument document = await this.InvokeAsync("GetSecurityPort", null);
-            return Convert.ToUInt16(document.Descendants("NewSecurityPort").First().Value);
+            return (await this.InvokeAsync<GetSecurityPortResponse>("GetSecurityPort", null))?.FirstOrDefault()?.NewSecurityPort;
         }
     }
 }

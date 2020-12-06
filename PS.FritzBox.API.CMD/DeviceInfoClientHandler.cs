@@ -98,7 +98,7 @@ namespace PS.FritzBox.API.CMD
         {
             this.ClearOutputAction();            
             base.PrintEntry();
-            UInt16 secPort = await this._client.GetSecurityPortAsync();
+            ushort? secPort = await this._client.GetSecurityPortAsync();
             this.PrintOutputAction($"SecurityPort: {secPort}");
         }
     }
