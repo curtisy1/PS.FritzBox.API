@@ -22,16 +22,14 @@ namespace PS.FritzBox.API.CMD
                 int deviceIndex;
                 do
                 {
-                    var counter = 0;
                     for (var i = 0; i < deviceCount; i++)
                     {
                         Console.WriteLine($"{i} - {devices[i].ModelName}");
                     }
-                    counter++;
 
                     input = Console.ReadLine();
 
-                } while (!Int32.TryParse(input, out deviceIndex) && (deviceIndex < 0 || deviceIndex >= devices.Count()));
+                } while (!int.TryParse(input, out deviceIndex) || (deviceIndex < 0 || deviceIndex >= devices.Length));
 
                 var selected = devices.Skip(deviceIndex).First();
                 Configure(selected);
