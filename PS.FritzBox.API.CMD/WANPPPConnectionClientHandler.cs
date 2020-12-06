@@ -16,7 +16,7 @@ namespace PS.FritzBox.API.CMD
 
         public override async Task Handle()
         {
-            string input = string.Empty;
+            var input = string.Empty;
 
             do
             {
@@ -216,7 +216,7 @@ namespace PS.FritzBox.API.CMD
             this.ClearOutputAction();
             this.PrintEntry();
             this.PrintOutputAction("Index: ");
-            if (Int32.TryParse(this.GetInputFunc(), out Int32 index))
+            if (Int32.TryParse(this.GetInputFunc(), out var index))
             {
                 var entry = await this._client.GetGenericPortMappingEntryAsync(index);
                 this.PrintObject(entry);
@@ -244,16 +244,16 @@ namespace PS.FritzBox.API.CMD
         {
             this.ClearOutputAction();
             this.PrintEntry();
-            PortMappingEntry entry = new PortMappingEntry();
+            var entry = new PortMappingEntry();
             this.PrintOutputAction("Remote host:");
-            if (IPAddress.TryParse(this.GetInputFunc(), out IPAddress remote))
+            if (IPAddress.TryParse(this.GetInputFunc(), out var remote))
                 entry.RemoteHost = remote;
             this.PrintOutputAction("External port:");
-            entry.ExternalPort = UInt16.TryParse(this.GetInputFunc(), out UInt16 res) ? res : (ushort)1;
+            entry.ExternalPort = UInt16.TryParse(this.GetInputFunc(), out var res) ? res : (ushort)1;
             this.PrintOutputAction("Internal host:");
-            entry.InternalHost = IPAddress.TryParse(this.GetInputFunc(), out IPAddress internalHost) ? internalHost : IPAddress.None;
+            entry.InternalHost = IPAddress.TryParse(this.GetInputFunc(), out var internalHost) ? internalHost : IPAddress.None;
             this.PrintOutputAction("internal port:");
-            entry.InternalPort = UInt16.TryParse(this.GetInputFunc(), out UInt16 res2) ? res2 : (ushort)1;
+            entry.InternalPort = UInt16.TryParse(this.GetInputFunc(), out var res2) ? res2 : (ushort)1;
             this.PrintOutputAction("Protocol (UDP, TCP, ESP, GRE)");
             entry.PortMappingProtocol = (PortMappingProtocol)Enum.Parse(typeof(PortMappingProtocol), this.GetInputFunc());          
             entry.Enabled = true;
@@ -268,9 +268,9 @@ namespace PS.FritzBox.API.CMD
             this.ClearOutputAction();
             this.PrintEntry();
             this.PrintOutputAction("RemoteHost host:");
-            IPAddress remoteHost = IPAddress.TryParse(this.GetInputFunc(), out IPAddress internalHost) ? internalHost :null;
+            var remoteHost = IPAddress.TryParse(this.GetInputFunc(), out var internalHost) ? internalHost :null;
             this.PrintOutputAction("external port:");
-            ushort externalPort = UInt16.TryParse(this.GetInputFunc(), out UInt16 res2) ? res2 : (ushort)1;
+            var externalPort = UInt16.TryParse(this.GetInputFunc(), out var res2) ? res2 : (ushort)1;
             this.PrintOutputAction("Protocol (UDP, TCP, ESP, GRE)");
             var pPortMappingProtocol = (PortMappingProtocol)Enum.Parse(typeof(PortMappingProtocol), this.GetInputFunc());
 
@@ -284,9 +284,9 @@ namespace PS.FritzBox.API.CMD
             this.PrintEntry();
 
             this.PrintOutputAction("RemoteHost host:");
-            IPAddress remoteHost = IPAddress.TryParse(this.GetInputFunc(), out IPAddress internalHost) ? internalHost : null;
+            var remoteHost = IPAddress.TryParse(this.GetInputFunc(), out var internalHost) ? internalHost : null;
             this.PrintOutputAction("external port:");
-            ushort externalPort = UInt16.TryParse(this.GetInputFunc(), out UInt16 res2) ? res2 : (ushort)1;
+            var externalPort = UInt16.TryParse(this.GetInputFunc(), out var res2) ? res2 : (ushort)1;
             this.PrintOutputAction("Protocol (UDP, TCP, ESP, GRE)");
             var pPortMappingProtocol = (PortMappingProtocol)Enum.Parse(typeof(PortMappingProtocol), this.GetInputFunc());
 
@@ -308,11 +308,11 @@ namespace PS.FritzBox.API.CMD
             this.ClearOutputAction();
             this.PrintEntry();
 
-            AutoDisconnectTimeSpan span = new AutoDisconnectTimeSpan();
+            var span = new AutoDisconnectTimeSpan();
             this.PrintOutputAction("Enable? (y / n)");
             span.PreventionEnable = this.GetInputFunc() == "y";
             this.PrintOutputAction("Hour:");
-            span.PreventionHour = ushort.TryParse(this.GetInputFunc(), out ushort hour) ? hour : (ushort)0;
+            span.PreventionHour = ushort.TryParse(this.GetInputFunc(), out var hour) ? hour : (ushort)0;
 
             await this._client.SetAutoDisconnectTimeSpanAsync(span);
             this.PrintOutputAction("AutoDisconnectTime set");

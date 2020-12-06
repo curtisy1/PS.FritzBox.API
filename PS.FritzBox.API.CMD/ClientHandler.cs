@@ -52,12 +52,12 @@ namespace PS.FritzBox.API.CMD
 
             foreach (var property in properties)
             {
-                string value = string.Empty;
-                Object oValue = property.GetValue(data);
+                var value = string.Empty;
+                var oValue = property.GetValue(data);
 
                 if (oValue != null && oValue is IList && oValue.GetType().IsGenericType)
                 {
-                    IList oData = (IList)property.GetValue(data) as IList;
+                    var oData = (IList)property.GetValue(data) as IList;
                     this.PrintOutputAction($"{property.Name}:");
                     foreach (var entry in oData)
                     {

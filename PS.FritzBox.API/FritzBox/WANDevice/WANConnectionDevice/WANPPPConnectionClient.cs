@@ -50,8 +50,8 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns></returns>
         public async Task<WANPPPConnectionInfo> GetInfoAsync()
         {
-            WANPPPConnectionInfo info = new WANPPPConnectionInfo();
-            XDocument document = await this.InvokeAsync("GetInfo", null);
+            var info = new WANPPPConnectionInfo();
+            var document = await this.InvokeAsync("GetInfo", null);
 
             // connection status values
             info.ConnectionStatus.ConnectionStatus = (ConnectionStatus)Enum.Parse(typeof(ConnectionStatus), document.Descendants("NewConnectionStatus").First().Value);
@@ -69,7 +69,7 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
             info.NATRSIPStatus.RSIPAvailable = document.Descendants("NewRSIPAvailable").First().Value == "1";
             info.NATRSIPStatus.NATEnabled = document.Descendants("NewNATEnabled").First().Value == "1";
 
-            info.ExternalIPAddress = IPAddress.TryParse(document.Descendants("NewExternalIPAddress").First().Value, out IPAddress external) ? external : IPAddress.None;
+            info.ExternalIPAddress = IPAddress.TryParse(document.Descendants("NewExternalIPAddress").First().Value, out var external) ? external : IPAddress.None;
             info.IdleDisconnectTime = Convert.ToUInt32(document.Descendants("NewIdleDisconnectTime").First().Value);
             info.Name = document.Descendants("NewName").First().Value;
             info.TransportType = document.Descendants("NewTransportType").First().Value;
@@ -77,7 +77,7 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
 
             info.PPPoEACName = document.Descendants("NewPPPoEACName").First().Value;
             info.PPPoEServiceName = document.Descendants("NewPPPoEServiceName").First().Value;
-            info.RemoteIPAddress = IPAddress.TryParse(document.Descendants("NewRemoteIPAddress").First().Value, out IPAddress remote) ? remote : IPAddress.None;
+            info.RemoteIPAddress = IPAddress.TryParse(document.Descendants("NewRemoteIPAddress").First().Value, out var remote) ? remote : IPAddress.None;
             info.RouteProtocolRx = document.Descendants("NewRouteProtocolRx").First().Value;
 
             return info;
@@ -89,9 +89,9 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns>the connection type info</returns>
         public async Task<ConnectionTypeInfo> GetConnectionTypeInfoAsync()
         {
-            ConnectionTypeInfo info = new ConnectionTypeInfo();
+            var info = new ConnectionTypeInfo();
 
-            XDocument document = await this.InvokeAsync("GetConnectionTypeInfo", null);
+            var document = await this.InvokeAsync("GetConnectionTypeInfo", null);
 
             info.ConnectionType = (ConnectionType)Enum.Parse(typeof(ConnectionType), document.Descendants("NewConnectionType").First().Value);
             info.PossibleConnectionTypes = (PossibleConnectionTypes)Enum.Parse(typeof(PossibleConnectionTypes), document.Descendants("NewPossibleConnectionTypes").First().Value);
@@ -106,7 +106,7 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         public async Task SetConnectionTypeAsync(string connectionType)
         {
             var parameter = new SoapRequestParameter("NewConnectionType", connectionType);
-            XDocument document = await this.InvokeAsync("SetConnectionType", parameter);
+            var document = await this.InvokeAsync("SetConnectionType", parameter);
         }
 
         /// <summary>
@@ -115,13 +115,13 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns></returns>
         public async Task<ConnectionStatusInfo> GetStatusInfoAsync()
         {
-            ConnectionStatusInfo info = new ConnectionStatusInfo();
+            var info = new ConnectionStatusInfo();
 
-            XDocument document = await this.InvokeAsync("GetStatusInfo", null);
+            var document = await this.InvokeAsync("GetStatusInfo", null);
 
             info.ConnectionStatus = (ConnectionStatus)Enum.Parse(typeof(ConnectionStatus), document.Descendants("NewConnectionStatus").First().Value);
             info.LastConnectionError = (ConnectionError)Enum.Parse(typeof(ConnectionError), document.Descendants("NewLastConnectionError").First().Value);
-            info.Uptime = UInt32.TryParse(document.Descendants("NewUptime").First().Value, out UInt32 value) ? value : 0;
+            info.Uptime = UInt32.TryParse(document.Descendants("NewUptime").First().Value, out var value) ? value : 0;
             return info;
         }
 
@@ -131,7 +131,7 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns>the user name</returns>
         public async Task<string> GetUserNameAsync()
         {
-            XDocument document = await this.InvokeAsync("GetUserName", null);
+            var document = await this.InvokeAsync("GetUserName", null);
             return document.Descendants("NewUserName").First().Value;
         }
 
@@ -142,7 +142,7 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         public async Task SetUserNameAsync(string userName)
         {
             var parameter = new SoapRequestParameter("NewUserName", userName);
-            XDocument document = await this.InvokeAsync("SetUserName", parameter);
+            var document = await this.InvokeAsync("SetUserName", parameter);
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         public async Task SetPasswordAsync(string password)
         {
             var parameter = new SoapRequestParameter("NewPassword", password);
-            XDocument document = await this.InvokeAsync("SetPassword", parameter);
+            var document = await this.InvokeAsync("SetPassword", parameter);
         }
 
         /// <summary>
@@ -161,8 +161,8 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns>the nat rsipstatus</returns>
         public async Task<NATRSIPStatus> GetNATRSIPStatusAsync()
         {
-            NATRSIPStatus status = new NATRSIPStatus();
-            XDocument document = await this.InvokeAsync("GetNATRSIPStatus", null);
+            var status = new NATRSIPStatus();
+            var document = await this.InvokeAsync("GetNATRSIPStatus", null);
 
             status.NATEnabled = document.Descendants("NewNATEnabled").First().Value == "1";
             status.RSIPAvailable = document.Descendants("NewRSIPAvailable").First().Value == "1";
@@ -175,7 +175,7 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// </summary>
         public async Task ForceTerminationAsync()
         {
-            XDocument document = await this.InvokeAsync("ForceTermination", null);
+            var document = await this.InvokeAsync("ForceTermination", null);
         }
                                
         /// <summary>
@@ -183,7 +183,7 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// </summary>
         public async Task RequestConnectionAsync()
         {
-            XDocument document = await this.InvokeAsync("RequestConnection", null);
+            var document = await this.InvokeAsync("RequestConnection", null);
         }
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns>the external ip address</returns>
         public async Task<string> GetExternalIPAddressAsync()
         {
-            XDocument document = await this.InvokeAsync("GetExternalIPAddress", null);
+            var document = await this.InvokeAsync("GetExternalIPAddress", null);
             return document.Descendants("NewExternalIPAddress").First().Value;
         }
 
@@ -202,11 +202,11 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns>the dns servers</returns>
         public async Task<List<IPAddress>> GetDNSServersAsync()
         {
-            List<IPAddress> addresses = new List<IPAddress>();
-            XDocument document = await this.InvokeAsync("X_GetDNSServers", null);
+            var addresses = new List<IPAddress>();
+            var document = await this.InvokeAsync("X_GetDNSServers", null);
             var dnsservers = document.Descendants("NewDNSServers").First().Value.Split(new char[] { '\r', '\n', ',' }, StringSplitOptions.RemoveEmptyEntries).AsEnumerable();
             foreach (var dnsServer in dnsservers)
-                addresses.Add(IPAddress.TryParse(dnsServer, out IPAddress server) ? server : IPAddress.None);
+                addresses.Add(IPAddress.TryParse(dnsServer, out var server) ? server : IPAddress.None);
 
             return addresses;
         }
@@ -218,7 +218,7 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         public async Task SetDNSServersAsync(string dnsServers)
         {
             var parameter = new SoapRequestParameter("NewDNSServers", dnsServers);
-            XDocument document = await this.InvokeAsync("X_SetDNSServers", parameter);
+            var document = await this.InvokeAsync("X_SetDNSServers", parameter);
         }
         
         /// <summary>
@@ -227,8 +227,8 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns>the link layer max bitrates</returns>
         public async Task<LinkLayerMaxBitRates> GetLinkLayerMaxBitRatesAsync()
         {
-            LinkLayerMaxBitRates bitRates = new LinkLayerMaxBitRates();
-            XDocument document = await this.InvokeAsync("GetLinkLayerMaxBitRates", null);
+            var bitRates = new LinkLayerMaxBitRates();
+            var document = await this.InvokeAsync("GetLinkLayerMaxBitRates", null);
 
             bitRates.DownstreamMaxBitRate = Convert.ToUInt32(document.Descendants("NewDownstreamMaxBitRate").First().Value);
             bitRates.UpstreamMaxBitRate = Convert.ToUInt32(document.Descendants("NewUpstreamMaxBitRate").First().Value);
@@ -241,7 +241,7 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns></returns>
         public async Task<UInt16> GetPortMappingNumberOfEntriesAsync()
         {
-            XDocument document = await this.InvokeAsync("GetPortMappingNumberOfEntries", null);
+            var document = await this.InvokeAsync("GetPortMappingNumberOfEntries", null);
             return Convert.ToUInt16(document.Descendants("NewPortMappingNumberOfEntries").First().Value);
         }
 
@@ -262,16 +262,16 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns>the generic port mapping entry</returns>
         public async Task<PortMappingEntry> GetGenericPortMappingEntryAsync(int mappingIndex)
         {
-            XDocument document = await this.InvokeAsync("GetGenericPortMappingEntry", new SoapRequestParameter("NewPortMappingIndex", mappingIndex));
+            var document = await this.InvokeAsync("GetGenericPortMappingEntry", new SoapRequestParameter("NewPortMappingIndex", mappingIndex));
 
-            PortMappingEntry entry = new PortMappingEntry();
+            var entry = new PortMappingEntry();
             entry.Description = document.Descendants("NewPortMappingDescription").First().Value;
             entry.Enabled = document.Descendants("NewEnabled").First().Value == "1";
-            entry.InternalHost = IPAddress.TryParse(document.Descendants("NewInternalClient").First().Value, out IPAddress internalHost) ? internalHost : IPAddress.None;
+            entry.InternalHost = IPAddress.TryParse(document.Descendants("NewInternalClient").First().Value, out var internalHost) ? internalHost : IPAddress.None;
             entry.InternalPort = Convert.ToUInt16(document.Descendants("NewInternalPort").First().Value);
             entry.LeaseDuration = Convert.ToUInt32(document.Descendants("NewLeaseDuration").First().Value);
             entry.PortMappingProtocol = (PortMappingProtocol)Enum.Parse(typeof(PortMappingProtocol), document.Descendants("NewProtocol").First().Value);
-            entry.RemoteHost = IPAddress.TryParse(document.Descendants("NewRemoteHost").First().Value, out IPAddress remoteHost) ? remoteHost : IPAddress.None;
+            entry.RemoteHost = IPAddress.TryParse(document.Descendants("NewRemoteHost").First().Value, out var remoteHost) ? remoteHost : IPAddress.None;
             entry.ExternalPort = Convert.ToUInt16(document.Descendants("NewExternalPort").First().Value);
 
             return entry;
@@ -283,10 +283,10 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns>the port mappings</returns>
         public async Task<List<PortMappingEntry>> GetPortMappingEntriesAsync()
         {
-            List<PortMappingEntry> portMappings = new List<PortMappingEntry>();
+            var portMappings = new List<PortMappingEntry>();
             int count = await this.GetPortMappingNumberOfEntriesAsync();
 
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
                 portMappings.Add(await this.GetGenericPortMappingEntryAsync(i));
 
             return portMappings;
@@ -301,16 +301,16 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns>the specific port mapping entry</returns>
         public async Task<PortMappingEntry> GetSpecificPortMappingEntryAsync(IPAddress remoteHost, UInt16 externalPort, PortMappingProtocol protocol)
         {
-            List<SoapRequestParameter> parameters = new List<SoapRequestParameter>()
+            var parameters = new List<SoapRequestParameter>()
             {
                 new SoapRequestParameter("NewRemoteHost", remoteHost?.ToString()),
                 new SoapRequestParameter("NewExternalPort", externalPort),
                 new SoapRequestParameter("NewProtocol", protocol.ToString())
             };
 
-            XDocument document = await this.InvokeAsync("GetSpecificPortMappingEntry", parameters.ToArray());
+            var document = await this.InvokeAsync("GetSpecificPortMappingEntry", parameters.ToArray());
 
-            PortMappingEntry entry = new PortMappingEntry()
+            var entry = new PortMappingEntry()
             {
                 RemoteHost = remoteHost,
                 ExternalPort = externalPort,
@@ -318,7 +318,7 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
             };
 
             entry.Enabled = document.Descendants("NewEnabled").First().Value == "1";
-            entry.InternalHost = IPAddress.TryParse(document.Descendants("NewInternalClient").First().Value, out IPAddress internalHost) ? internalHost : IPAddress.None;
+            entry.InternalHost = IPAddress.TryParse(document.Descendants("NewInternalClient").First().Value, out var internalHost) ? internalHost : IPAddress.None;
             entry.InternalPort = Convert.ToUInt16(document.Descendants("NewInternalPort").First().Value);
             entry.LeaseDuration = Convert.ToUInt32(document.Descendants("NewLeaseDuration").First().Value);
             entry.Description = document.Descendants("NewPortMappingDescription").First().Value;
@@ -333,7 +333,7 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns></returns>
         public async Task AddPortMappingAsync(PortMappingEntry entry)
         {
-            List<SoapRequestParameter> parameters = new List<SoapRequestParameter>()
+            var parameters = new List<SoapRequestParameter>()
             {
                 new SoapRequestParameter("NewRemoteHost", entry.RemoteHost?.ToString()),
                 new SoapRequestParameter("NewExternalPort", entry.ExternalPort),
@@ -357,7 +357,7 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns></returns>
         public async Task DeletePortMappingAsync(IPAddress remoteHost, UInt16 externalPort, PortMappingProtocol protocol)
         {
-            List<SoapRequestParameter> parameters = new List<SoapRequestParameter>()
+            var parameters = new List<SoapRequestParameter>()
             {
                 new SoapRequestParameter("NewRemoteHost", remoteHost?.ToString()),
                 new SoapRequestParameter("NewExternalPort", externalPort),
@@ -374,7 +374,7 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <param name="idleDisconnectTime">the disconnect time</param>
         public async Task SetIdleDisconnectTimeAsync(UInt32 idleDisconnectTime)
         {
-            SoapRequestParameter parameter = new SoapRequestParameter("NewIdleDisconnectTime", idleDisconnectTime);
+            var parameter = new SoapRequestParameter("NewIdleDisconnectTime", idleDisconnectTime);
             await this.InvokeAsync("SetIdleDisconnectTime", parameter);
         }
 
@@ -384,7 +384,7 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns>the auto disconnect prevention settings</returns>
         public async Task<UInt16> GetAutoDisconnectTimeSpanAsync()
         {
-            XDocument document = await this.InvokeAsync("GetAutoDisconnectTime", null);
+            var document = await this.InvokeAsync("GetAutoDisconnectTime", null);
             return Convert.ToUInt16(document.Descendants("NewAutoDisconnectTime").First().Value);
         }
 
@@ -395,7 +395,7 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns></returns>
         public async Task SetAutoDisconnectTimeSpanAsync(AutoDisconnectTimeSpan settings)
         {
-            List<SoapRequestParameter> parameters = new List<SoapRequestParameter>()
+            var parameters = new List<SoapRequestParameter>()
             {
                 new SoapRequestParameter("NewX_AVM-DE_DisconnectPreventionEnable", settings.PreventionEnable ? 1 : 0),
                 new SoapRequestParameter("NewX_AVM-DE_DisconnectPreventionHour", settings.PreventionHour)

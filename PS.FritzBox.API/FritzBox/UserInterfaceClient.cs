@@ -49,7 +49,7 @@ namespace PS.FritzBox.API
         /// <returns>the info</returns>
         public async Task<UserInterfaceInfo> GetInfoAsync()
         {
-            XDocument document = await this.InvokeAsync("GetInfo", null);
+            var document = await this.InvokeAsync("GetInfo", null);
             return new UserInterfaceInfo()
             {                
                 PasswordRequired = document.Descendants("NewPasswordRequired").First().Value == "1",
@@ -83,7 +83,7 @@ namespace PS.FritzBox.API
         /// <returns>the CGI Info with session id valid up to 60 seconds</returns>
         public async Task<CGIInfo> DoPrepareCGIAsync()
         {
-            XDocument document = await this.InvokeAsync("X_AVM-DE_DoPrepareCGI", null);
+            var document = await this.InvokeAsync("X_AVM-DE_DoPrepareCGI", null);
             return new CGIInfo()
             {
                 CGIPath = document.Descendants("NewX_AVM-DE_CGI").First().Value,
@@ -97,7 +97,7 @@ namespace PS.FritzBox.API
         /// <returns>the update state</returns>
         public async Task<UpdateInfo> DoUpdateAsync()
         {
-            XDocument document = await this.InvokeAsync("X_AVM-DE_DoUpdate", null);
+            var document = await this.InvokeAsync("X_AVM-DE_DoUpdate", null);
             return new UpdateInfo()
             {
                 UpgradeAvailable = document.Descendants("NewUpgradeAvailable").First().Value == "1",
@@ -113,7 +113,7 @@ namespace PS.FritzBox.API
         /// <returns></returns>
         public async Task DoManualUpdateAsync(string downloadUrl, bool allowDowngrade)
         {
-            List<SOAP.SoapRequestParameter> parameters = new List<SOAP.SoapRequestParameter>()
+            var parameters = new List<SOAP.SoapRequestParameter>()
             {
                 new SOAP.SoapRequestParameter("NewX_AVM-DE_DownloadURL", downloadUrl),
                 new SOAP.SoapRequestParameter("NewX_AVM-DE_AllowDowngrade", allowDowngrade ? "1" : "0")
@@ -128,12 +128,12 @@ namespace PS.FritzBox.API
         /// <returns></returns>
         public async Task<XUpdateInfo> GetUpdateInfoAsync()
         {
-            XDocument document =    await this.InvokeAsync("X_AVM-DE_GetInfo", null);
+            var document =    await this.InvokeAsync("X_AVM-DE_GetInfo", null);
 
             return new XUpdateInfo()
             {
                 AutoUpdateMode = (AutoUpdateMode)Enum.Parse(typeof(AutoUpdateMode), document.Descendants("NewX_AVM-DE_AutoUpdateMode").First().Value),
-                UpdateTime = DateTime.TryParse(document.Descendants("NewX_AVM-DE_UpdateTime").First().Value, out DateTime updateTime) ? updateTime : default(DateTime),
+                UpdateTime = DateTime.TryParse(document.Descendants("NewX_AVM-DE_UpdateTime").First().Value, out var updateTime) ? updateTime : default(DateTime),
                 // info of the last firmware
                 LastFirmware = new FirmwareInfo()
                 {

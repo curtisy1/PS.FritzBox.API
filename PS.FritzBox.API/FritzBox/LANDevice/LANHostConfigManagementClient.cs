@@ -54,8 +54,8 @@ namespace PS.FritzBox.API.LANDevice
         /// <returns>the lan host config info</returns>
         public async Task<LANHostConfigInfo> GetInfoAsync()
         {
-            XDocument document = await this.InvokeAsync("GetInfo", null);
-            LANHostConfigInfo info = new LANHostConfigInfo();
+            var document = await this.InvokeAsync("GetInfo", null);
+            var info = new LANHostConfigInfo();
 
             info.DHCPRelay = document.Descendants("NewDHCPRelay").First().Value == "1";
             info.DHCPServerConfigurable = document.Descendants("NewDHCPServerConfigurable").First().Value == "1";
@@ -63,21 +63,21 @@ namespace PS.FritzBox.API.LANDevice
             info.DomainName = document.Descendants("NewDomainName").First().Value;
            
             var ipRouters = document.Descendants("NewIPRouters").First().Value.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).AsEnumerable();
-            foreach (string ipRouter in ipRouters)
-                info.IPRouters.Add(IPAddress.TryParse(ipRouter, out IPAddress router) ? router : IPAddress.None);
+            foreach (var ipRouter in ipRouters)
+                info.IPRouters.Add(IPAddress.TryParse(ipRouter, out var router) ? router : IPAddress.None);
 
             var dnsServers = document.Descendants("NewDNSServers").First().Value.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).AsEnumerable();
-            foreach (string dnsServer in dnsServers)
-                info.DNSServers.Add(IPAddress.TryParse(dnsServer, out IPAddress server) ? server : IPAddress.None);
+            foreach (var dnsServer in dnsServers)
+                info.DNSServers.Add(IPAddress.TryParse(dnsServer, out var server) ? server : IPAddress.None);
 
-            info.AddressRange.MaxAddress = IPAddress.TryParse(document.Descendants("NewMaxAddress").First().Value, out IPAddress maxAddress) ? maxAddress : IPAddress.None;
-            info.AddressRange.MinAddress = IPAddress.TryParse(document.Descendants("NewMinAddress").First().Value, out IPAddress minAddress) ? minAddress : IPAddress.None;
+            info.AddressRange.MaxAddress = IPAddress.TryParse(document.Descendants("NewMaxAddress").First().Value, out var maxAddress) ? maxAddress : IPAddress.None;
+            info.AddressRange.MinAddress = IPAddress.TryParse(document.Descendants("NewMinAddress").First().Value, out var minAddress) ? minAddress : IPAddress.None;
 
             var reservedAddresses = document.Descendants("NewReservedAddresses").First().Value.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).AsEnumerable();
-            foreach (string reservedAddress in reservedAddresses)
-                info.ReservedAddresses.Add(IPAddress.TryParse(reservedAddress, out IPAddress reserved) ? reserved : IPAddress.None);
+            foreach (var reservedAddress in reservedAddresses)
+                info.ReservedAddresses.Add(IPAddress.TryParse(reservedAddress, out var reserved) ? reserved : IPAddress.None);
 
-            info.SubnetMask = IPAddress.TryParse(document.Descendants("NewSubnetMask").First().Value, out IPAddress subnetMask) ? subnetMask : IPAddress.None;
+            info.SubnetMask = IPAddress.TryParse(document.Descendants("NewSubnetMask").First().Value, out var subnetMask) ? subnetMask : IPAddress.None;
 
             return info;
         }
@@ -108,8 +108,8 @@ namespace PS.FritzBox.API.LANDevice
         /// <returns>the subnet mask</returns>
         public async Task<IPAddress> GetSubnetMaskAsync()
         {
-            XDocument document = await this.InvokeAsync("GetSubnetMask", null);
-            return IPAddress.TryParse(document.Descendants("NewSubnetMask").First().Value, out IPAddress subnetMask) ? subnetMask : IPAddress.None;
+            var document = await this.InvokeAsync("GetSubnetMask", null);
+            return IPAddress.TryParse(document.Descendants("NewSubnetMask").First().Value, out var subnetMask) ? subnetMask : IPAddress.None;
         }
 
         /// <summary>
@@ -127,12 +127,12 @@ namespace PS.FritzBox.API.LANDevice
         /// <returns>the list of ip routers</returns>
         public async Task<List<IPAddress>> GetIPRoutersListAsync()
         {
-            List<IPAddress> addresses = new List<IPAddress>();
-            XDocument document = await this.InvokeAsync("GetIPRoutersList", null);
+            var addresses = new List<IPAddress>();
+            var document = await this.InvokeAsync("GetIPRoutersList", null);
             var routers = document.Descendants("NewIPRouters").First().Value.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).AsEnumerable();
 
             foreach (var router in routers)
-                addresses.Add(IPAddress.TryParse(router, out IPAddress address) ? address : IPAddress.None);
+                addresses.Add(IPAddress.TryParse(router, out var address) ? address : IPAddress.None);
 
             return addresses;
         }
@@ -146,7 +146,7 @@ namespace PS.FritzBox.API.LANDevice
         /// <param name="addressingType">the addressing type (only supports 'Static'</param>
         public async Task SetIPInterfaceAsync(bool enabled, IPAddress ipAddress, IPAddress subnetMask, string addressingType = "Static")
         {
-            List<SOAP.SoapRequestParameter> parameters = new List<SOAP.SoapRequestParameter>()
+            var parameters = new List<SOAP.SoapRequestParameter>()
             {
                 new SOAP.SoapRequestParameter("NewEnabled", enabled ? "1" : "0"),
                 new SOAP.SoapRequestParameter("NewIPAddress", ipAddress.ToString()),
@@ -163,10 +163,10 @@ namespace PS.FritzBox.API.LANDevice
         /// <returns>the ip address range</returns>
         public async Task<LANHostConfigAddressRange> GetAddressRangeAsync()
         {
-            XDocument document = await this.InvokeAsync("GetAddressRange", null);
-            LANHostConfigAddressRange range = new LANHostConfigAddressRange();
-            range.MaxAddress = IPAddress.TryParse(document.Descendants("NewMaxAddress").First().Value, out IPAddress maxAddress) ? maxAddress : IPAddress.None;
-            range.MinAddress = IPAddress.TryParse(document.Descendants("NewMinAddress").First().Value, out IPAddress minAddress) ? minAddress : IPAddress.None;
+            var document = await this.InvokeAsync("GetAddressRange", null);
+            var range = new LANHostConfigAddressRange();
+            range.MaxAddress = IPAddress.TryParse(document.Descendants("NewMaxAddress").First().Value, out var maxAddress) ? maxAddress : IPAddress.None;
+            range.MinAddress = IPAddress.TryParse(document.Descendants("NewMinAddress").First().Value, out var minAddress) ? minAddress : IPAddress.None;
 
             return range;
         }
@@ -188,7 +188,7 @@ namespace PS.FritzBox.API.LANDevice
         /// <returns>the number of ip interfaces</returns>
         public async Task<UInt16> GetIPInterfaceNumberOfEntriesAsync()
         {
-            XDocument document = await this.InvokeAsync("GetIPInterfaceNumberOfEntries", null);
+            var document = await this.InvokeAsync("GetIPInterfaceNumberOfEntries", null);
             return Convert.ToUInt16(document.Descendants("NewIPInterfaceNumberOfEntries").First().Value);
         }
 
@@ -198,12 +198,12 @@ namespace PS.FritzBox.API.LANDevice
         /// <returns>the dns servers</returns>
         public async Task<List<IPAddress>> GetDNSServerAsync()
         {
-            List<IPAddress> servers = new List<IPAddress>();
-            XDocument document = await this.InvokeAsync("GetDNSServers", null);          
+            var servers = new List<IPAddress>();
+            var document = await this.InvokeAsync("GetDNSServers", null);          
 
             var dnsServers = document.Descendants("NewDNSServers").First().Value.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).AsEnumerable();
             foreach (var dnsServer in dnsServers)
-                servers.Add(IPAddress.TryParse(dnsServer, out IPAddress server) ? server : IPAddress.None);
+                servers.Add(IPAddress.TryParse(dnsServer, out var server) ? server : IPAddress.None);
 
             return servers;
         }

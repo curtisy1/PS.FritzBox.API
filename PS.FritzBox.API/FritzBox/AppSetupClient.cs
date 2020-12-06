@@ -48,9 +48,9 @@ namespace PS.FritzBox.API
         /// <returns>the app setup info</returns>
         public async Task<AppSetupInfo> GetInfoAsync()
         {
-            XDocument document = await this.InvokeAsync("GetInfo", null);
+            var document = await this.InvokeAsync("GetInfo", null);
 
-            AppSetupInfo info = new AppSetupInfo();
+            var info = new AppSetupInfo();
             info.AppIDValidationInfo.MinChars = Convert.ToUInt16(document.Descendants("NewMinCharsAppId").First().Value);
             info.AppIDValidationInfo.MaxChars = Convert.ToUInt16(document.Descendants("NewMaxCharsAppId").First().Value);
             info.AppIDValidationInfo.AllowedChars = document.Descendants("NewAllowedCharsAppId").First().Value;
@@ -86,9 +86,9 @@ namespace PS.FritzBox.API
         /// <returns>the config</returns>
         public async Task<AppConfigRights> GetConfigAsync()
         {
-            XDocument document = await this.InvokeAsync("GetConfig", null);
+            var document = await this.InvokeAsync("GetConfig", null);
 
-            AppConfigRights rights = new AppConfigRights();
+            var rights = new AppConfigRights();
             rights.InternetRights = document.Descendants("NewInternetRights").First().Value == "1";
             rights.AccessFromInternet = document.Descendants("NewAccessFromInternet").First().Value == "1";
             rights.ConfigRight = (RightEnum)Enum.Parse(typeof(RightEnum), document.Descendants("NewConfigRight").First().Value);
@@ -108,7 +108,7 @@ namespace PS.FritzBox.API
         /// <returns></returns>
         public async Task RegisterAppAsync(AppInfo info)
         {
-            List<SOAP.SoapRequestParameter> parameters = new List<SOAP.SoapRequestParameter>()
+            var parameters = new List<SOAP.SoapRequestParameter>()
             {
                 new SOAP.SoapRequestParameter("NewAppDeviceMAC", info.AppDeviceMAC),
                 new SOAP.SoapRequestParameter("NewAppDisplayName", info.AppDisplayName),
@@ -133,7 +133,7 @@ namespace PS.FritzBox.API
         /// <returns></returns>
         public async Task SetAppVPNASync(AppVPNInfo info)
         {
-            List<SOAP.SoapRequestParameter> parameters = new List<SOAP.SoapRequestParameter>()
+            var parameters = new List<SOAP.SoapRequestParameter>()
             {
                 new SOAP.SoapRequestParameter("NewAppId", info.AppId),
                 new SOAP.SoapRequestParameter("NewIPSecIdentifier", info.IPSecIdentifier),
@@ -153,7 +153,7 @@ namespace PS.FritzBox.API
         /// <returns>the box sender id</returns>
         public async Task<string> SetAppMessageReceiverAsync(AppMessageReceiverConfig config)
         {
-            List<SOAP.SoapRequestParameter> parameters = new List<SOAP.SoapRequestParameter>()
+            var parameters = new List<SOAP.SoapRequestParameter>()
             {
                 new SOAP.SoapRequestParameter("NewAppAVMAddress", config.AppAVMAddress),
                 new SOAP.SoapRequestParameter("NewAppAVMPasswordHash", config.AppAVMPasswordHash),
@@ -162,7 +162,7 @@ namespace PS.FritzBox.API
                 new SOAP.SoapRequestParameter("NewEncryptionSecret", config.EncryptionSecret)
             };
 
-            XDocument document = await this.InvokeAsync("SetAppMessageReceiver", parameters.ToArray());
+            var document = await this.InvokeAsync("SetAppMessageReceiver", parameters.ToArray());
             return document.Descendants("NewBoxSenderId").First().Value;
         }
 

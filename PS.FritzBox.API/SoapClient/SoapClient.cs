@@ -46,7 +46,7 @@ namespace PS.FritzBox.API.SOAP
         /// <returns></returns>
         private string CreateEnvelope(SoapRequestParameters parameters)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.Append(@"<?xml version='1.0' encoding='UTF-8'?> 
                       <soap:Envelope xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
                       xmlns:xsd='http://www.w3.org/2001/XMLSchema'
@@ -54,7 +54,7 @@ namespace PS.FritzBox.API.SOAP
                       <soap:Body>");
 
             sb.Append($"<{parameters.Action} xmlns='{parameters.RequestNameSpace}'>");
-            foreach (SoapRequestParameter parameter in parameters.Parameters)
+            foreach (var parameter in parameters.Parameters)
                 sb.Append($"<{parameter.ParameterName}>{parameter.ParameterValue}</{parameter.ParameterName}>");
             sb.Append($"</{parameters.Action}>");
             sb.Append(@"</soap:Body></soap:Envelope>");
@@ -72,12 +72,12 @@ namespace PS.FritzBox.API.SOAP
         /// <returns></returns>
         private async Task<XDocument> ExecuteAsync(string xmlSOAP, Uri url, SoapRequestParameters parameters)
         {
-            HttpClientHandler handler = new HttpClientHandler {
+            var handler = new HttpClientHandler {
                 ServerCertificateCustomValidationCallback = delegate { return true; },
                 Credentials = parameters.Credentials
             };
 
-            using HttpClient client = new HttpClient(handler);
+            using var client = new HttpClient(handler);
             var request = new HttpRequestMessage {
                 RequestUri = url,
                 Method = HttpMethod.Post,
@@ -89,14 +89,14 @@ namespace PS.FritzBox.API.SOAP
             request.Content.Headers.ContentType = new MediaTypeHeaderValue("text/xml");
             request.Headers.Add("SOAPAction", $"{parameters.SoapAction}");
               
-            HttpResponseMessage response = await client.SendAsync(request);
+            var response = await client.SendAsync(request);
                 
             if(!response.IsSuccessStatusCode && response.StatusCode != HttpStatusCode.InternalServerError)
             {
                 throw new Exception(response.ReasonPhrase);
             }
 
-            XDocument soapResponse = XDocument.Load(await response.Content.ReadAsStreamAsync());
+            var soapResponse = XDocument.Load(await response.Content.ReadAsStreamAsync());
 
             this.ValidateSoapResponse(soapResponse);
             return soapResponse;
@@ -112,12 +112,12 @@ namespace PS.FritzBox.API.SOAP
         private async ValueTask<IEnumerable<T>> ExecuteAsync<T>(string xmlSOAP, Uri url, SoapRequestParameters parameters)
             where T : class
         {
-            HttpClientHandler handler = new HttpClientHandler {
+            var handler = new HttpClientHandler {
                 ServerCertificateCustomValidationCallback = delegate { return true; },
                 Credentials = parameters.Credentials
             };
 
-            using HttpClient client = new HttpClient(handler);
+            using var client = new HttpClient(handler);
             var request = new HttpRequestMessage {
                 RequestUri = url,
                 Method = HttpMethod.Post,
@@ -129,7 +129,7 @@ namespace PS.FritzBox.API.SOAP
             request.Content.Headers.ContentType = new MediaTypeHeaderValue("text/xml");
             request.Headers.Add("SOAPAction", $"{parameters.SoapAction}");
               
-            HttpResponseMessage response = await client.SendAsync(request);
+            var response = await client.SendAsync(request);
                 
             if(!response.IsSuccessStatusCode && response.StatusCode != HttpStatusCode.InternalServerError)
             {
@@ -154,8 +154,8 @@ namespace PS.FritzBox.API.SOAP
             var faultNode = document.Descendants("Fault").FirstOrDefault();
             if(faultNode != null)
             {
-                string faultCode = faultNode.Descendants("faultcode").First().Value;
-                string faultString = faultNode.Descendants("faultstring").First().Value;
+                var faultCode = faultNode.Descendants("faultcode").First().Value;
+                var faultString = faultNode.Descendants("faultstring").First().Value;
 
                 throw new SoapFaultException(faultCode, faultString, string.Empty);
             }

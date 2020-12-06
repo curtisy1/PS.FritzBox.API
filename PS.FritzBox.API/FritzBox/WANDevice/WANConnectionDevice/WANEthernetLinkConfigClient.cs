@@ -49,7 +49,7 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns>the ethernet link status</returns>
         public async Task<EthernetLinkStatus> GetEthernetLinkStatusAsync()
         {
-            XDocument document = await this.InvokeAsync("GetEthernetLinkStatus", null);
+            var document = await this.InvokeAsync("GetEthernetLinkStatus", null);
             return (EthernetLinkStatus)Enum.Parse(typeof(EthernetLinkStatus), document.Descendants("NewEthernetLinkStatus").First().Value);
         }
     }

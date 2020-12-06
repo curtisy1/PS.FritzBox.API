@@ -52,7 +52,7 @@ namespace PS.FritzBox.API.LANDevice
         /// <param name="enable"></param>
         public async Task SetEnableAsync(bool enable)
         {
-            XDocument document = await this.InvokeAsync("SetEnable", new SoapRequestParameter("NewEnable", enable ? "1" : "0"));
+            var document = await this.InvokeAsync("SetEnable", new SoapRequestParameter("NewEnable", enable ? "1" : "0"));
         }
 
         /// <summary>
@@ -61,12 +61,12 @@ namespace PS.FritzBox.API.LANDevice
         /// <returns></returns>
         public async Task<LANEthernetInterfaceInfo> GetInfoAsync()
         {
-            XDocument document = await this.InvokeAsync("GetInfo", null);
+            var document = await this.InvokeAsync("GetInfo", null);
 
-            LANEthernetInterfaceInfo info = new LANEthernetInterfaceInfo();
+            var info = new LANEthernetInterfaceInfo();
             info.Enable = document.Descendants("NewEnable").First().Value == "1";
             info.MACAddress = document.Descendants("NewMACAddress").First().Value;
-            info.MaxBitRate = UInt32.TryParse(document.Descendants("NewMaxBitRate").First().Value, out uint val) ? val : 0;
+            info.MaxBitRate = UInt32.TryParse(document.Descendants("NewMaxBitRate").First().Value, out var val) ? val : 0;
             info.Status = document.Descendants("NewStatus").First().Value;
             info.DuplexMode = document.Descendants("NewDuplexMode").First().Value;
 
@@ -79,8 +79,8 @@ namespace PS.FritzBox.API.LANDevice
         /// <returns>the lan interface statistics</returns>
         public async Task<LANStatistics> GetStatisticsAsync()
         {
-            XDocument document = await this.InvokeAsync("GetStatistics", null);
-            LANStatistics statistics = new LANStatistics();
+            var document = await this.InvokeAsync("GetStatistics", null);
+            var statistics = new LANStatistics();
             statistics.BytesSent = Convert.ToUInt32(document.Descendants("NewBytesSent").First().Value);
             statistics.BytesReceived = Convert.ToUInt32(document.Descendants("NewBytesReceived").First().Value);
             statistics.PacketsSent = Convert.ToUInt32(document.Descendants("NewPacketsSent").First().Value);

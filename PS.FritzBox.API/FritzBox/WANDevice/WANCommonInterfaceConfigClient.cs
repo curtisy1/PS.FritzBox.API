@@ -49,9 +49,9 @@ namespace PS.FritzBox.API.WANDevice
         /// <returns>the common link properties</returns>
         public async Task<CommonLinkProperties> GetCommonLinkPropertiesAsync()
         {
-            XDocument document = await this.InvokeAsync("GetCommonLinkProperties", null);
+            var document = await this.InvokeAsync("GetCommonLinkProperties", null);
 
-            CommonLinkProperties properties = new CommonLinkProperties();
+            var properties = new CommonLinkProperties();
             properties.WANAccessType = document.Descendants("NewWANAccessType").First().Value;
             properties.PhysicalLinkStatus = document.Descendants("NewPhysicalLinkStatus").First().Value;
             properties.Layer1DownstreamMaxBitRate = Convert.ToUInt32(document.Descendants("NewLayer1DownstreamMaxBitRate").First().Value);
@@ -67,7 +67,7 @@ namespace PS.FritzBox.API.WANDevice
         /// <returns>the total bytes sent</returns>
         public async Task<UInt64> GetTotalBytesSentAsync()
         {
-            XDocument document = await this.InvokeAsync("GetTotalBytesSent", null);
+            var document = await this.InvokeAsync("GetTotalBytesSent", null);
             return Convert.ToUInt64(document.Descendants("NewTotalBytesSent").First().Value);
         }
         
@@ -78,7 +78,7 @@ namespace PS.FritzBox.API.WANDevice
         /// <returns>the total bytes received</returns>
         public async Task<UInt64> GetTotalBytesReceivedAsync()
         {
-            XDocument document = await this.InvokeAsync("GetTotalBytesReceived", null);
+            var document = await this.InvokeAsync("GetTotalBytesReceived", null);
             return Convert.ToUInt64(document.Descendants("NewTotalBytesReceived").First().Value);
         }
         
@@ -89,7 +89,7 @@ namespace PS.FritzBox.API.WANDevice
         /// <returns>the total packets sent</returns>
         public async Task<UInt64> GetTotalPacketsSentAsync()
         {
-            XDocument document = await this.InvokeAsync("GetTotalPacketsSent", null);
+            var document = await this.InvokeAsync("GetTotalPacketsSent", null);
             return Convert.ToUInt64(document.Descendants("NewTotalPacketsSent").First().Value);
         }
 
@@ -100,7 +100,7 @@ namespace PS.FritzBox.API.WANDevice
         /// <returns>the total packets received</returns>
         public async Task<UInt64> GetTotalPacketsReceivedAsync()
         {
-            XDocument document = await this.InvokeAsync("GetTotalPacketsReceived", null);            
+            var document = await this.InvokeAsync("GetTotalPacketsReceived", null);            
             return Convert.ToUInt64(document.Descendants("NewTotalPacketsReceived").First().Value);
         }
 
@@ -111,7 +111,7 @@ namespace PS.FritzBox.API.WANDevice
         /// <param name="accessType">the new wan access type</param>
         public async Task SetWANAccessTypeAsync(string accessType)
         {
-            XDocument document = await this.InvokeAsync("X_AVM-DE_SetWANAccessType", new SoapRequestParameter("NewAccessType", accessType));
+            var document = await this.InvokeAsync("X_AVM-DE_SetWANAccessType", new SoapRequestParameter("NewAccessType", accessType));
         }
 
         /// <summary>
@@ -122,9 +122,9 @@ namespace PS.FritzBox.API.WANDevice
         /// <returns>the online monitor info</returns>
         public async Task<OnlineMonitorInfo> GetOnlineMonitorAsync(UInt32 groupIndex)  
         {
-            XDocument document = await this.InvokeAsync("X_AVM-DE_GetOnlineMonitor", new SoapRequestParameter("NewSyncGroupIndex", groupIndex));
+            var document = await this.InvokeAsync("X_AVM-DE_GetOnlineMonitor", new SoapRequestParameter("NewSyncGroupIndex", groupIndex));
 
-            OnlineMonitorInfo info = new OnlineMonitorInfo();
+            var info = new OnlineMonitorInfo();
             info.SyncGroupMode = document.Descendants("NewSyncGroupMode").First().Value;
             info.SyncGroupName = document.Descendants("NewSyncGroupName").First().Value;
             info.TotalNumberSyncGroups = Convert.ToUInt32(document.Descendants("NewTotalNumberSyncGroups").First().Value);

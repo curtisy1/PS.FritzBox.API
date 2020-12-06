@@ -60,7 +60,7 @@ namespace PS.FritzBox.API
         /// <returns>the default connecton service</returns>
         public async Task<string> GetDefaultConnectionServiceAsync()
         {
-            XDocument document = await this.InvokeAsync("GetDefaultConnectionService", null);
+            var document = await this.InvokeAsync("GetDefaultConnectionService", null);
             return document.Descendants("NewDefaultConnectionService").First().Value;
         }
 
@@ -70,7 +70,7 @@ namespace PS.FritzBox.API
         /// <returns>the number of forward entries</returns>
         public async Task<UInt16> GetForwardNumberOfEntriesAsync()
         {
-            XDocument document = await this.InvokeAsync("GetForwardNumberOfEntries", null);
+            var document = await this.InvokeAsync("GetForwardNumberOfEntries", null);
             return Convert.ToUInt16(document.Descendants("NewForwardNumberOfEntries").First().Value);
         }
 
@@ -81,7 +81,7 @@ namespace PS.FritzBox.API
         /// <returns></returns>
         public async Task AddForwardingEntryAsync(Layer3ForwardingEntry entry)
         {
-            List<SOAP.SoapRequestParameter> parameters = new List<SOAP.SoapRequestParameter>()
+            var parameters = new List<SOAP.SoapRequestParameter>()
             {
                 new SOAP.SoapRequestParameter("NewType", entry.Type),
                 new SOAP.SoapRequestParameter("NewDestIPAddress", entry.DestinationIPAddress),
@@ -123,7 +123,7 @@ namespace PS.FritzBox.API
         /// <returns></returns>
         public async Task DeleteForwardingEntryAsync(Layer3ForwardingEntry entry)
         {
-            List<SOAP.SoapRequestParameter> parameters = new List<SOAP.SoapRequestParameter>()
+            var parameters = new List<SOAP.SoapRequestParameter>()
             {
                 new SOAP.SoapRequestParameter("NewDestIPAddress", entry.DestinationIPAddress.ToString()),
                 new SOAP.SoapRequestParameter("NewDestSubnetMask", entry.DestinationSubnetMask.ToString()),
@@ -144,7 +144,7 @@ namespace PS.FritzBox.API
         /// <returns>the specific forwarding entry</returns>
         public async Task<Layer3ForwardingEntry> GetSpecificForwardingEntryAsync(IPAddress sourceIPAddress, IPAddress sourceSubnetMask, IPAddress destinationIPAddress, IPAddress destinationSubnetMask)
         {
-            List<SOAP.SoapRequestParameter> parameters = new List<SOAP.SoapRequestParameter>()
+            var parameters = new List<SOAP.SoapRequestParameter>()
             {
                 new SOAP.SoapRequestParameter("NewDestIPAddress", destinationIPAddress.ToString()),
                 new SOAP.SoapRequestParameter("NewDestSubnetMask", destinationSubnetMask.ToString()),
@@ -152,7 +152,7 @@ namespace PS.FritzBox.API
                 new SOAP.SoapRequestParameter("NewSourceSubnetMask", sourceSubnetMask.ToString())
             };
 
-            XDocument document = await this.InvokeAsync("GetSpecificForwardingEntry", parameters.ToArray());
+            var document = await this.InvokeAsync("GetSpecificForwardingEntry", parameters.ToArray());
 
             return new Layer3ForwardingEntry()
             {
@@ -161,7 +161,7 @@ namespace PS.FritzBox.API
                 SourceIPAddress = sourceIPAddress,
                 SourceSubnetMask = sourceSubnetMask,
                 ForwardingMetric = Convert.ToInt32(document.Descendants("NewForwardingMetric").First().Value),
-                GatewayIPAddress = IPAddress.TryParse(document.Descendants("NewGatewayIPAddress").First().Value, out IPAddress gateway) ? gateway : IPAddress.None,
+                GatewayIPAddress = IPAddress.TryParse(document.Descendants("NewGatewayIPAddress").First().Value, out var gateway) ? gateway : IPAddress.None,
                 Interface = document.Descendants("NewInterface").First().Value,
                 Type = document.Descendants("NewType").First().Value,
                 Enabled = document.Descendants("NewEnable").First().Value == "1",
@@ -176,16 +176,16 @@ namespace PS.FritzBox.API
         /// <returns>the generic entry</returns>
         public async Task<Layer3ForwardingEntry> GetGenericForwardingEntryAsync(int index)
         {
-            XDocument document = await this.InvokeAsync("GetGenericForwardingEntry", new SOAP.SoapRequestParameter("NewForwardingIndex", index));
+            var document = await this.InvokeAsync("GetGenericForwardingEntry", new SOAP.SoapRequestParameter("NewForwardingIndex", index));
 
             return new Layer3ForwardingEntry()
             {
-                DestinationIPAddress = IPAddress.TryParse(document.Descendants("NewDestIPAddress").First().Value, out IPAddress destIP) ? destIP : IPAddress.None,
-                DestinationSubnetMask = IPAddress.TryParse(document.Descendants("NewDestSubnetMask").First().Value, out IPAddress destSub) ? destSub : IPAddress.None,
-                SourceIPAddress = IPAddress.TryParse(document.Descendants("NewSourceIPAddress").First().Value, out IPAddress sourceIP) ? sourceIP : IPAddress.None,
-                SourceSubnetMask = IPAddress.TryParse(document.Descendants("NewSourceSubnetMask").First().Value, out IPAddress sourceSub) ? sourceSub : IPAddress.None,
+                DestinationIPAddress = IPAddress.TryParse(document.Descendants("NewDestIPAddress").First().Value, out var destIP) ? destIP : IPAddress.None,
+                DestinationSubnetMask = IPAddress.TryParse(document.Descendants("NewDestSubnetMask").First().Value, out var destSub) ? destSub : IPAddress.None,
+                SourceIPAddress = IPAddress.TryParse(document.Descendants("NewSourceIPAddress").First().Value, out var sourceIP) ? sourceIP : IPAddress.None,
+                SourceSubnetMask = IPAddress.TryParse(document.Descendants("NewSourceSubnetMask").First().Value, out var sourceSub) ? sourceSub : IPAddress.None,
                 ForwardingMetric = Convert.ToInt32(document.Descendants("NewForwardingMetric").First().Value),
-                GatewayIPAddress = IPAddress.TryParse(document.Descendants("NewGatewayIPAddress").First().Value, out IPAddress gateway) ? gateway : IPAddress.None,
+                GatewayIPAddress = IPAddress.TryParse(document.Descendants("NewGatewayIPAddress").First().Value, out var gateway) ? gateway : IPAddress.None,
                 Interface = document.Descendants("NewInterface").First().Value,
                 Type = document.Descendants("NewType").First().Value,
                 Enabled = document.Descendants("NewEnable").First().Value == "1",
@@ -222,7 +222,7 @@ namespace PS.FritzBox.API
         /// <returns></returns>
         public async Task SetForwardingEntryEnableAsync(Layer3ForwardingEntry entry, bool enabled)
         {
-            List<SOAP.SoapRequestParameter> parameters = new List<SOAP.SoapRequestParameter>()
+            var parameters = new List<SOAP.SoapRequestParameter>()
             {
                 new SOAP.SoapRequestParameter("NewDestIPAddress", entry.DestinationIPAddress.ToString()),
                 new SOAP.SoapRequestParameter("NewDestSubnetMask", entry.DestinationSubnetMask.ToString()),
@@ -240,10 +240,10 @@ namespace PS.FritzBox.API
         /// <returns>all forwarding entries</returns>
         public async Task<List<Layer3ForwardingEntry>> GetForwardingEntriesAsync()
         {
-            List<Layer3ForwardingEntry> entries = new List<Layer3ForwardingEntry>();
+            var entries = new List<Layer3ForwardingEntry>();
             int count = await this.GetForwardNumberOfEntriesAsync();
 
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
                 entries.Add(await this.GetGenericForwardingEntryAsync(i));
 
             return entries;

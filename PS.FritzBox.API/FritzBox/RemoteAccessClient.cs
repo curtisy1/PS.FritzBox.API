@@ -50,7 +50,7 @@ namespace PS.FritzBox.API
         /// <returns>the remote access info</returns>
         public async Task<RemoteAccessInfo> GetInfoAsync()
         {
-            XDocument document = await this.InvokeAsync("GetInfo", null);
+            var document = await this.InvokeAsync("GetInfo", null);
 
             return new RemoteAccessInfo
             {
@@ -70,7 +70,7 @@ namespace PS.FritzBox.API
         /// <returns></returns>
         public async Task SetConfigAsync(bool enable, UInt16 port, string userName, string password)
         {
-            List<SOAP.SoapRequestParameter> parameters = new List<SOAP.SoapRequestParameter>()
+            var parameters = new List<SOAP.SoapRequestParameter>()
             {
                 new SOAP.SoapRequestParameter("NewEnabled", enable ? 1 : 0),
                 new SOAP.SoapRequestParameter("NewPort", port),
@@ -87,7 +87,7 @@ namespace PS.FritzBox.API
         /// <returns>the ddns info</returns>
         public async Task<DDNSInfo> GetDDNSInfoAsync()
         {
-            XDocument document = await this.InvokeAsync("GetDDNSInfo", null);
+            var document = await this.InvokeAsync("GetDDNSInfo", null);
 
             return new DDNSInfo
             {
@@ -95,8 +95,8 @@ namespace PS.FritzBox.API
                 Enabled = document.Descendants("NewEnabled").First().Value,
                 Mode = (DDNSMode)Enum.Parse(typeof(DDNSMode), document.Descendants("NewMode").First().Value),
                 ProviderName = document.Descendants("NewProviderName").First().Value,
-                ServerIPv4 = IPAddress.TryParse(document.Descendants("NewServerIPv4").First().Value, out IPAddress v4) ? v4 : IPAddress.None,
-                ServerIPv6 = IPAddress.TryParse(document.Descendants("NewServerIPv6").First().Value, out IPAddress v6) ? v6 : IPAddress.None,
+                ServerIPv4 = IPAddress.TryParse(document.Descendants("NewServerIPv4").First().Value, out var v4) ? v4 : IPAddress.None,
+                ServerIPv6 = IPAddress.TryParse(document.Descendants("NewServerIPv6").First().Value, out var v6) ? v6 : IPAddress.None,
                 StatusIPv4 = (DDNSStatus)Enum.Parse(typeof(DDNSStatus), document.Descendants("NewStatusIPv4").First().Value.Replace("-", "_")),
                 StatusIPv6 = (DDNSStatus)Enum.Parse(typeof(DDNSStatus), document.Descendants("NewStatusIPv6").First().Value.Replace("-", "_")),
                 UpdateUrl = document.Descendants("NewUpdateUrl").First().Value,
@@ -110,14 +110,14 @@ namespace PS.FritzBox.API
         /// <returns>the dyn dns providers</returns>
         public async Task<ICollection<DDNSProvider>> GetDDNSProvidersAsync()
         {
-            XDocument document = await this.InvokeAsync("GetDDNSProviders", null);
+            var document = await this.InvokeAsync("GetDDNSProviders", null);
 
             // parse the provider list
-            XDocument providerList = XDocument.Parse(document.Descendants("NewProviderList").First().Value);
+            var providerList = XDocument.Parse(document.Descendants("NewProviderList").First().Value);
 
-            List<DDNSProvider> providers = new List<DDNSProvider>();
+            var providers = new List<DDNSProvider>();
 
-            foreach(XElement element in this.GetElements(providerList.Root, "Item"))
+            foreach(var element in this.GetElements(providerList.Root, "Item"))
             {
                 providers.Add(new DDNSProvider()
                 {

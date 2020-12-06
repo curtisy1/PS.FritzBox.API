@@ -15,7 +15,7 @@ namespace PS.FritzBox.API.CMD
 
         public override async Task Handle()
         {
-            string input = string.Empty;
+            var input = string.Empty;
 
             do
             {
@@ -93,7 +93,7 @@ namespace PS.FritzBox.API.CMD
             this.PrintEntry();
             this.ClearOutputAction();
             this.PrintOutputAction("Are you sure to reset? (y/n)");
-            string result = this.GetInputFunc();
+            var result = this.GetInputFunc();
 
             if (result == "y")
                 await _client.FactoryResetAsync();
@@ -110,7 +110,7 @@ namespace PS.FritzBox.API.CMD
             this.ClearOutputAction();
             this.PrintEntry();
             this.PrintOutputAction("Are you sure to reboot? (y/n)");
-            string result = this.GetInputFunc();
+            var result = this.GetInputFunc();
 
             if (result == "y")
                await _client.RebootAsync();
@@ -141,7 +141,7 @@ namespace PS.FritzBox.API.CMD
         {
             this.ClearOutputAction();
             this.PrintEntry();
-            string result = await this._client.FinishConfigurationAsync();
+            var result = await this._client.FinishConfigurationAsync();
             this.PrintOutputAction($"Configuration result: {result}");
         }
 
@@ -150,7 +150,7 @@ namespace PS.FritzBox.API.CMD
             this.ClearOutputAction();
             this.PrintEntry();
             this.PrintOutputAction("Password: ");          
-            string result = await this._client.GetConfigFileAsync(this.GetInputFunc());
+            var result = await this._client.GetConfigFileAsync(this.GetInputFunc());
             this.PrintOutputAction($"Configfile: {result}");
         }
 
@@ -159,7 +159,7 @@ namespace PS.FritzBox.API.CMD
             this.ClearOutputAction();
             this.PrintEntry();
             this.PrintOutputAction("Targetpath: ");
-            string target = this.GetInputFunc();
+            var target = this.GetInputFunc();
             this.PrintOutputAction("Password: ");
             await this._client.DownloadConfigFileAsync(this.GetInputFunc(), target);
             this.PrintOutputAction("Config file downloaded");
@@ -169,7 +169,7 @@ namespace PS.FritzBox.API.CMD
         {
             this.ClearOutputAction();
             this.PrintEntry();
-            string urlSID = await this._client.GenerateUrlSIDAsync();
+            var urlSID = await this._client.GenerateUrlSIDAsync();
             this.PrintOutputAction($"UrlSID: {urlSID}");
         }
 
@@ -177,7 +177,7 @@ namespace PS.FritzBox.API.CMD
         {
             this.ClearOutputAction();
             this.PrintEntry();
-            string persistentData = await this._client.GetPersistentDataAsync();
+            var persistentData = await this._client.GetPersistentDataAsync();
             this.PrintOutputAction($"Persistent Data: {persistentData}");
         }
 

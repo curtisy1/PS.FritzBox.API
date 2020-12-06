@@ -15,7 +15,7 @@ namespace PS.FritzBox.API.CMD
 
         public override async Task Handle()
         {
-            string input = string.Empty;
+            var input = string.Empty;
 
             do
             {
@@ -140,7 +140,7 @@ namespace PS.FritzBox.API.CMD
             this.ClearOutputAction();
             this.PrintEntry();
 
-            foreach(WLANDeviceInfo info in await this._client.GetAssociatedDevicesAsync())
+            foreach(var info in await this._client.GetAssociatedDevicesAsync())
             {
                 Console.WriteLine("###########################");
                 this.PrintObject(info);
@@ -202,7 +202,7 @@ namespace PS.FritzBox.API.CMD
             this.ClearOutputAction();
             this.PrintEntry();
             this.PrintOutputAction("New index:");
-            if (UInt16.TryParse(this.GetInputFunc(), out UInt16 result))
+            if (UInt16.TryParse(this.GetInputFunc(), out var result))
             {
                 await this._client.SetDefaultWEPKeyIndexAsync(result);
                 this.PrintOutputAction("New index set");
@@ -242,7 +242,7 @@ namespace PS.FritzBox.API.CMD
             this.PrintEntry();
             var channelInfo = await this._client.GetChannelInfoAsync();
             this.PrintOutputAction("New Channel:");
-            if (UInt16.TryParse(this.GetInputFunc(), out UInt16 channel) && channelInfo.PossibleChannels.Max() >= channel)
+            if (UInt16.TryParse(this.GetInputFunc(), out var channel) && channelInfo.PossibleChannels.Max() >= channel)
             {
                 await this._client.SetChannelAsync(channel);
                 this.PrintOutputAction("channel set");

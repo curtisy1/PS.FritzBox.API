@@ -50,10 +50,10 @@ namespace PS.FritzBox.API
         /// <returns>time info</returns>
         public async Task<TimeInfo> GetInfoAsync()
         {
-            XDocument document = await this.InvokeAsync("GetInfo", null);
-            TimeInfo info = new TimeInfo();
-            info.NTPServer1 = IPAddress.TryParse(document.Descendants("NewNTPServer1").First().Value, out IPAddress ntp1) ? ntp1 : IPAddress.None;
-            info.NTPServer2 = IPAddress.TryParse(document.Descendants("NewNTPServer2").First().Value, out IPAddress ntp2) ? ntp2 : IPAddress.None;
+            var document = await this.InvokeAsync("GetInfo", null);
+            var info = new TimeInfo();
+            info.NTPServer1 = IPAddress.TryParse(document.Descendants("NewNTPServer1").First().Value, out var ntp1) ? ntp1 : IPAddress.None;
+            info.NTPServer2 = IPAddress.TryParse(document.Descendants("NewNTPServer2").First().Value, out var ntp2) ? ntp2 : IPAddress.None;
             info.CurrentLocalTime = Convert.ToDateTime(document.Descendants("NewCurrentLocalTime").First().Value);
             info.LocalTimeZone = document.Descendants("NewLocalTimeZone").First().Value;
             info.LocalTimeZoneName = document.Descendants("NewLocalTimeZoneName").First().Value;

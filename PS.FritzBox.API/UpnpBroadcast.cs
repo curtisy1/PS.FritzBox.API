@@ -53,7 +53,7 @@ namespace PS.FritzBox.API
             var ipAdress = IPAddress.Parse(host);
             IpEndPoint = new IPEndPoint(ipAdress, Port);
 
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.AppendLine("M-SEARCH * HTTP/1.1");
             sb.AppendLine($"Host:239.255.255.250:1900");
             sb.AppendLine("Man:\"ssdp:discover\"");

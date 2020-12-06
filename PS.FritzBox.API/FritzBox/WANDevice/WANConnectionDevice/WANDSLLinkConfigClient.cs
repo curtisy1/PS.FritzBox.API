@@ -49,7 +49,7 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns>the ethernet link status</returns>
         public async Task<WANDSLLinkInfo> GetInfoAsync()
         {
-            XDocument document = await this.InvokeAsync("GetInfo", null);
+            var document = await this.InvokeAsync("GetInfo", null);
 
             return new WANDSLLinkInfo
             {
@@ -75,7 +75,7 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns></returns>
         public async Task SetEnableAsync(bool enable)
         {
-            XDocument document = await this.InvokeAsync("SetEnable", new SOAP.SoapRequestParameter("NewEnable", enable ? 1 : 0));
+            var document = await this.InvokeAsync("SetEnable", new SOAP.SoapRequestParameter("NewEnable", enable ? 1 : 0));
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns></returns>
         public async Task SetDSLLinkTypeAsync(WANDSLLinkType linkType)
         {
-            XDocument document = await this.InvokeAsync("SetDSLLinkType", new SOAP.SoapRequestParameter("LinkType", linkType.ToString()));
+            var document = await this.InvokeAsync("SetDSLLinkType", new SOAP.SoapRequestParameter("LinkType", linkType.ToString()));
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns>the dsl link info</returns>
         public async Task<DSLLinkInfo> GetDSLLinkInfoAsync()
         {
-            XDocument document = await this.InvokeAsync("GetDSLLinkInfo", null);
+            var document = await this.InvokeAsync("GetDSLLinkInfo", null);
 
             return new DSLLinkInfo
             {
@@ -110,7 +110,7 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns>the destination address</returns>
         public async Task SetDestinationAddressAsync(string destinationAddress)
         {
-            XDocument document = await this.InvokeAsync("SetDestinationAddress", new SOAP.SoapRequestParameter("NewDestinationAddress´", destinationAddress));
+            var document = await this.InvokeAsync("SetDestinationAddress", new SOAP.SoapRequestParameter("NewDestinationAddress´", destinationAddress));
         }
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns>the destination address</returns>
         public async Task<String> GetDestinationAddressAsync()
         {
-            XDocument document = await this.InvokeAsync("GetDestinationAddress", null);
+            var document = await this.InvokeAsync("GetDestinationAddress", null);
             return document.Descendants("NewDestinationAddress").First().Value;
         }
 
@@ -130,7 +130,7 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns></returns>
         public async Task SetATMEncapsulationAsync(string ATMEncapsulation)
         {
-            XDocument document = await this.InvokeAsync("SetATMEncapsulation", new SOAP.SoapRequestParameter("NewATMEncapsulation", ATMEncapsulation));
+            var document = await this.InvokeAsync("SetATMEncapsulation", new SOAP.SoapRequestParameter("NewATMEncapsulation", ATMEncapsulation));
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns>the atm encapsulation</returns>
         public async Task<String> GetATMEncapsulationAsync()
         {
-            XDocument document = await this.InvokeAsync("GetATMEncapsulation", null);
+            var document = await this.InvokeAsync("GetATMEncapsulation", null);
             return document.Descendants("NewATMEncapsulation").First().Value;
         }
 
@@ -149,7 +149,7 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns>the auto config value</returns>
         public async Task<bool> GetAutoConfigAsync()
         {
-            XDocument document = await this.InvokeAsync("GetAutoConfig", null);
+            var document = await this.InvokeAsync("GetAutoConfig", null);
             return document.Descendants("NewAutoConfig").First().Value == "1";
         }
 
@@ -159,7 +159,7 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns>the wan dsllink statistic</returns>
         public async Task<WANDSLLinkStatistic> GetStatisticsAsync()
         {
-            XDocument document = await this.InvokeAsync("GetStatistics", null);
+            var document = await this.InvokeAsync("GetStatistics", null);
 
             return new WANDSLLinkStatistic
             {

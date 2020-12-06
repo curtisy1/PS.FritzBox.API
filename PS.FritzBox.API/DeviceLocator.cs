@@ -44,16 +44,16 @@ namespace PS.FritzBox.API
         /// <returns></returns>
         private async Task<ICollection<FritzDevice>> DiscoverBroadcast()
         {
-            List<Task<List<FritzDevice>>> broadcastTasks = new List<Task<List<FritzDevice>>>();
+            var broadcastTasks = new List<Task<List<FritzDevice>>>();
             // iterate through all adapters and send multicast on 
             // valid adapters
-            foreach(NetworkInterface adapter in NetworkInterface.GetAllNetworkInterfaces())
+            foreach(var adapter in NetworkInterface.GetAllNetworkInterfaces())
             {
                 if (adapter.SupportsMulticast && adapter.OperationalStatus == OperationalStatus.Up
                    && adapter.NetworkInterfaceType != NetworkInterfaceType.Loopback)
                 {
-                    IPInterfaceProperties properties = adapter.GetIPProperties();
-                    IPAddress broadcastAddress = this.GetUnicastAddress(properties);
+                    var properties = adapter.GetIPProperties();
+                    var broadcastAddress = this.GetUnicastAddress(properties);
 
                     // skip if invalid address
                     if (broadcastAddress == null || broadcastAddress.Equals(IPAddress.None)|| broadcastAddress.IsIPv6LinkLocal)
@@ -71,8 +71,8 @@ namespace PS.FritzBox.API
 
         private async Task<List<FritzDevice>> BeginSendReceiveAsync(IPAddress broadcastAddress)
         {
-            using UdpClient client = new UdpClient(broadcastAddress.AddressFamily) { MulticastLoopback = false };
-            Socket socket = client.Client;
+            using var client = new UdpClient(broadcastAddress.AddressFamily) { MulticastLoopback = false };
+            var socket = client.Client;
             
             var broadcastViaIpV4 = broadcastAddress.AddressFamily == AddressFamily.InterNetwork;
 
@@ -82,7 +82,7 @@ namespace PS.FritzBox.API
             }
             else
             {
-                byte[] interfaceArray = BitConverter.GetBytes((int)broadcastAddress.ScopeId);
+                var interfaceArray = BitConverter.GetBytes((int)broadcastAddress.ScopeId);
                 socket.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.MulticastInterface, interfaceArray);
             }
 
@@ -155,10 +155,10 @@ namespace PS.FritzBox.API
         /// <param name="broadcast">The broadcast to send to the client.</param>
         private async Task<List<FritzDevice>> BroadcastAsync(UdpClient client, UpnpBroadcast broadcast)
         {
-            int duplicateCount = 0;
-            int iterations = 0;
-            List<IPAddress> discoveredIpAddresses = new List<IPAddress>();
-            List<FritzDevice> discoveredDevices = new List<FritzDevice>();
+            var duplicateCount = 0;
+            var iterations = 0;
+            var discoveredIpAddresses = new List<IPAddress>();
+            var discoveredDevices = new List<FritzDevice>();
 
             do
             {
@@ -169,10 +169,10 @@ namespace PS.FritzBox.API
                 {
                     duplicateCount = 0;
                     discoveredIpAddresses.Add(result.RemoteEndPoint.Address);
-                    string response = Encoding.ASCII.GetString(result.Buffer, 0, result.Buffer.Length);
+                    var response = Encoding.ASCII.GetString(result.Buffer, 0, result.Buffer.Length);
 
                     // create device by endpoint data
-                    FritzDevice device = await FritzDevice.ParseResponseAsync(result.RemoteEndPoint.Address, response);
+                    var device = await FritzDevice.ParseResponseAsync(result.RemoteEndPoint.Address, response);
                     if (device != null && device.Location != null && device.Location.Scheme != "unknown")
                     {
                         try
@@ -206,9 +206,9 @@ namespace PS.FritzBox.API
         /// <returns></returns>
         private IPAddress GetUnicastAddress(IPInterfaceProperties properties)
         {
-            IPAddress ipAddress = IPAddress.None;
+            var ipAddress = IPAddress.None;
 
-            foreach (UnicastIPAddressInformation addressInfo in properties.UnicastAddresses)
+            foreach (var addressInfo in properties.UnicastAddresses)
             {
                 if (addressInfo.Address.AddressFamily == AddressFamily.InterNetwork
                    || (addressInfo.Address.AddressFamily == AddressFamily.InterNetworkV6 && !addressInfo.Address.IsIPv6LinkLocal))

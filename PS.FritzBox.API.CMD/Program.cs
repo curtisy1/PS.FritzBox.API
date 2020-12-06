@@ -12,9 +12,9 @@ namespace PS.FritzBox.API.CMD
         static async Task Main(string[] args)
         {
             Console.WriteLine("Searching for devices...");
-            FritzDevice[] devices = (await FritzDevice.LocateDevicesAsync()).ToArray();
+            var devices = (await FritzDevice.LocateDevicesAsync()).ToArray();
 
-            int deviceCount = devices.Length;
+            var deviceCount = devices.Length;
             if (deviceCount > 0)
             {
                 Console.WriteLine($"Found {deviceCount} devices.");
@@ -22,8 +22,8 @@ namespace PS.FritzBox.API.CMD
                 int deviceIndex;
                 do
                 {
-                    int counter = 0;
-                    for (int i = 0; i < deviceCount; i++)
+                    var counter = 0;
+                    for (var i = 0; i < deviceCount; i++)
                     {
                         Console.WriteLine($"{i} - {devices[i].ModelName}");
                     }
@@ -33,7 +33,7 @@ namespace PS.FritzBox.API.CMD
 
                 } while (!Int32.TryParse(input, out deviceIndex) && (deviceIndex < 0 || deviceIndex >= devices.Count()));
 
-                FritzDevice selected = devices.Skip(deviceIndex).First();
+                var selected = devices.Skip(deviceIndex).First();
                 Configure(selected);
 
                 do
@@ -80,7 +80,7 @@ namespace PS.FritzBox.API.CMD
 
         static void Configure(FritzDevice device)
         {
-            ConnectionSettings settings = GetConnectionSettings();
+            var settings = GetConnectionSettings();
             device.Credentials = new System.Net.NetworkCredential(settings.UserName, settings.Password);
             //device.GetServiceClient<DeviceInfoClient>(settings);
             InitClientHandler(device);
@@ -92,7 +92,7 @@ namespace PS.FritzBox.API.CMD
         /// <returns>the connection settings</returns>
         static ConnectionSettings GetConnectionSettings()
         {
-            ConnectionSettings settings = new ConnectionSettings();
+            var settings = new ConnectionSettings();
             Console.Write("User: ");
             settings.UserName = Console.ReadLine();
             Console.Write("Password: ");

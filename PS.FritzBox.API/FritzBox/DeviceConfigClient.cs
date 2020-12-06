@@ -48,7 +48,7 @@ namespace PS.FritzBox.API
         /// </summary>
         public async Task FactoryResetAsync()
         {
-            XDocument document = await this.InvokeAsync("FactoryReset", null);
+            var document = await this.InvokeAsync("FactoryReset", null);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace PS.FritzBox.API
         /// </summary>
         public async Task RebootAsync()
         {
-            XDocument document = await this.InvokeAsync("Reboot", null);
+            var document = await this.InvokeAsync("Reboot", null);
         }
 
         /// <summary>
@@ -67,12 +67,12 @@ namespace PS.FritzBox.API
         public async Task<string> GetConfigFileAsync(string password)
         {
             // get the config file data from device
-            XDocument document = await this.InvokeAsync("X_AVM-DE_GetConfigFile", new SoapRequestParameter("NewX_AVM-DE_Password", password));
+            var document = await this.InvokeAsync("X_AVM-DE_GetConfigFile", new SoapRequestParameter("NewX_AVM-DE_Password", password));
             // parse the url out of the result
-            string configFile = document.Descendants("NewX_AVM-DE_ConfigFileUrl").First().Value;
+            var configFile = document.Descendants("NewX_AVM-DE_ConfigFileUrl").First().Value;
 
             // create uri and replace the host in config file url
-            Uri uri = default(Uri);
+            var uri = default(Uri);
             Uri.TryCreate(this.ConnectionSettings.BaseUrl, UriKind.Absolute, out uri);
             return configFile.Replace("127.0.0.1", uri.Host);
         }
@@ -85,9 +85,9 @@ namespace PS.FritzBox.API
         public async Task DownloadConfigFileAsync(string password, string path)
         {
             // get the config file url from device
-            string configFile = await this.GetConfigFileAsync(password);
+            var configFile = await this.GetConfigFileAsync(password);
             // get the config file and write it to file system
-            byte[] fileContent = await this.DownloadFileAsync(configFile);
+            var fileContent = await this.DownloadFileAsync(configFile);
             File.WriteAllBytes(path, fileContent);
         }
 
@@ -98,7 +98,7 @@ namespace PS.FritzBox.API
         /// <param name="url">the url to the config file</param>
         public async Task SetConfigFileAsync(string password, string url)
         {
-            XDocument document = await this.InvokeAsync("X_AVM-DE_SetConfigFile", new SoapRequestParameter("NewX_AVM-DE_Password", password), new SoapRequestParameter("NewX_AVM-DE_ConfigFileUrl", url));
+            var document = await this.InvokeAsync("X_AVM-DE_SetConfigFile", new SoapRequestParameter("NewX_AVM-DE_Password", password), new SoapRequestParameter("NewX_AVM-DE_ConfigFileUrl", url));
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace PS.FritzBox.API
         /// <returns></returns>
         private async Task<byte[]> DownloadFileAsync(string url)
         {
-            HttpClientHandler handler = new HttpClientHandler();
+            var handler = new HttpClientHandler();
             handler.ServerCertificateCustomValidationCallback = delegate { return true; };
             using (var client = new HttpClient(handler))
             {
@@ -130,7 +130,7 @@ namespace PS.FritzBox.API
         /// <returns></returns>
         public async Task<string> GetPersistentDataAsync()
         {
-            XDocument document = await this.InvokeAsync("GetPersistentData", null);
+            var document = await this.InvokeAsync("GetPersistentData", null);
             return document.Descendants("NewPersistentData").First().Value;
         }
 
@@ -149,7 +149,7 @@ namespace PS.FritzBox.API
         /// <returns>the UUID</returns>
         public async Task<string> GenerateUUIDAsync()
         {
-            XDocument document = await this.InvokeAsync("X_GenerateUUID", null);
+            var document = await this.InvokeAsync("X_GenerateUUID", null);
             return document.Descendants("NewUUID").First().Value;
         }
 
@@ -167,7 +167,7 @@ namespace PS.FritzBox.API
         /// <returns>the new state</returns>
         public async Task<string> FinishConfigurationAsync()
         {
-            XDocument document = await this.InvokeAsync("ConfigurationFinished", null);
+            var document = await this.InvokeAsync("ConfigurationFinished", null);
             return document.Descendants("NewStatus").First().Value;
         }
 
@@ -178,7 +178,7 @@ namespace PS.FritzBox.API
         /// <returns>the new Url sid</returns>
         public async Task<string> GenerateUrlSIDAsync()
         {
-            XDocument document = await this.InvokeAsync("X_AVM-DE_CreateUrlSID", null);
+            var document = await this.InvokeAsync("X_AVM-DE_CreateUrlSID", null);
             return document.Descendants("NewX_AVM-DE_UrlSID").First().Value;
         }
     }

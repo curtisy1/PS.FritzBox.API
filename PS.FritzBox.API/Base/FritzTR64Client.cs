@@ -82,9 +82,9 @@ namespace PS.FritzBox.API.Base
         /// <returns>the resulting xml document</returns>
         internal async Task<XDocument> InvokeAsync(string action, params SoapRequestParameter[] parameter)
         {
-            SoapClient client = new SoapClient();
+            var client = new SoapClient();
 
-            SoapRequestParameters parameters = new SoapRequestParameters {
+            var parameters = new SoapRequestParameters {
                 UserName = this.ConnectionSettings.UserName,
                 Password = this.ConnectionSettings.Password,
                 Timeout = this.ConnectionSettings.Timeout,
@@ -98,7 +98,7 @@ namespace PS.FritzBox.API.Base
                 parameters.Parameters.AddRange(parameter);
 
             var urlBuilder = new UriBuilder(this.ConnectionSettings.BaseUrl) { Path = this.ControlUrl };
-            XDocument soapResult = await client.InvokeAsync(urlBuilder.Uri, parameters);
+            var soapResult = await client.InvokeAsync(urlBuilder.Uri, parameters);
 
             this.ParseSoapFault(soapResult);
 
@@ -108,9 +108,9 @@ namespace PS.FritzBox.API.Base
         internal ValueTask<IEnumerable<T>> InvokeAsync<T>(string action, params SoapRequestParameter[] parameter)
             where T : class
         {
-            SoapClient client = new SoapClient();
+            var client = new SoapClient();
 
-            SoapRequestParameters parameters = new SoapRequestParameters {
+            var parameters = new SoapRequestParameters {
                 UserName = this.ConnectionSettings.UserName,
                 Password = this.ConnectionSettings.Password,
                 Timeout = this.ConnectionSettings.Timeout,
@@ -135,15 +135,15 @@ namespace PS.FritzBox.API.Base
         {            
             if(document.Descendants("faultcode").Count() > 0)
             {
-                string code = document.Descendants("faultcode").First().Value;
-                string text = document.Descendants("faultstring").First().Value;
+                var code = document.Descendants("faultcode").First().Value;
+                var text = document.Descendants("faultstring").First().Value;
 
-                string upnpErrorText = string.Empty;
+                var upnpErrorText = string.Empty;
                 if (document.Descendants("detail").Count() > 0)
                 {
-                    XElement detailElement = document.Descendants("detail").First();
-                    XElement upnpError = (XElement)detailElement.FirstNode;
-                    foreach (XElement element in upnpError != null ? upnpError.Elements() : detailElement.Elements())
+                    var detailElement = document.Descendants("detail").First();
+                    var upnpError = (XElement)detailElement.FirstNode;
+                    foreach (var element in upnpError != null ? upnpError.Elements() : detailElement.Elements())
                     {
                         upnpErrorText += $"{element.Name}: {element.Value}{Environment.NewLine}";
                     }

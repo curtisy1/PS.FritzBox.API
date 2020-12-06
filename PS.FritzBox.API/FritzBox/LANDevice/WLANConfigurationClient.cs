@@ -65,13 +65,13 @@ namespace PS.FritzBox.API.LANDevice
         /// <returns></returns>
         public async Task<WLANInfo> GetInfoAsync()
         {            
-            XDocument document = await this.InvokeAsync("GetInfo", null);
+            var document = await this.InvokeAsync("GetInfo", null);
             return new WLANInfo()
             {
                 Config = new WLANConfig()
                 {
                     BasicEncryptionModes = (BasicEncryptionModes)Enum.Parse(typeof(BasicEncryptionModes), document.Descendants("NewBasicEncryptionModes").First().Value),
-                    BeaconType = Enum.TryParse<BeaconType>(document.Descendants("NewBeaconType").First().Value, out BeaconType result) ? result : BeaconType._11i,
+                    BeaconType = Enum.TryParse<BeaconType>(document.Descendants("NewBeaconType").First().Value, out var result) ? result : BeaconType._11i,
                     Channel = Convert.ToUInt16(document.Descendants("NewChannel").First().Value),
                     MACAddressControlEnabled = document.Descendants("NewMACAddressControlEnabled").First().Value == "1",
                     SSID = document.Descendants("NewSSID").First().Value,
@@ -102,7 +102,7 @@ namespace PS.FritzBox.API.LANDevice
         /// <returns></returns>
         public async Task SetConfigAsync(WLANConfig config)
         {
-            List<SOAP.SoapRequestParameter> parameters = new List<SOAP.SoapRequestParameter>()
+            var parameters = new List<SOAP.SoapRequestParameter>()
             {
                 new SOAP.SoapRequestParameter("NewChannel", config.Channel),
                 new SOAP.SoapRequestParameter("NewSSID", config.SSID),
@@ -120,7 +120,7 @@ namespace PS.FritzBox.API.LANDevice
         /// <returns></returns>
         public async Task<SecurityKeyConfig> GetSecurityKeysAsync()
         {
-            XDocument document = await this.InvokeAsync("GetSecurityKeys", null);
+            var document = await this.InvokeAsync("GetSecurityKeys", null);
             return new SecurityKeyConfig()
             {
                 WEPKey0 = document.Descendants("NewWEPKey0").First().Value,
@@ -139,7 +139,7 @@ namespace PS.FritzBox.API.LANDevice
         /// <returns></returns>
         public async Task SetSecurityKeysAsync(SecurityKeyConfig config)
         {
-            List<SOAP.SoapRequestParameter> parameters = new List<SOAP.SoapRequestParameter>()
+            var parameters = new List<SOAP.SoapRequestParameter>()
             {
                 new SOAP.SoapRequestParameter("NewWEPKey0", config.WEPKey0),
                 new SOAP.SoapRequestParameter("NewWEPKey1", config.WEPKey1),
@@ -158,7 +158,7 @@ namespace PS.FritzBox.API.LANDevice
         /// <returns>the default wep key index</returns>
         public async Task<UInt16> GetDefaultWEPKeyIndexAsync()
         {
-            XDocument document = await this.InvokeAsync("GetDefaultWEPKeyIndex", null);
+            var document = await this.InvokeAsync("GetDefaultWEPKeyIndex", null);
             return Convert.ToUInt16(document.Descendants("NewDefaultWEPKeyIndex").First().Value);
         }
 
@@ -178,7 +178,7 @@ namespace PS.FritzBox.API.LANDevice
         /// <returns>encryption mode</returns>
         public async Task<BasicEncryptionModes> GetBasBeaconSecurityPropertiesAsync()
         {
-            XDocument document = await this.InvokeAsync("GetBasBeaconSecurityProperties", null);
+            var document = await this.InvokeAsync("GetBasBeaconSecurityProperties", null);
             return (BasicEncryptionModes)Enum.Parse(typeof(BasicEncryptionModes), document.Descendants("NewBasicEncryptionModes").First().Value);
         }
 
@@ -197,7 +197,7 @@ namespace PS.FritzBox.API.LANDevice
         /// <returns>the bssid</returns>
         public async Task<string> GetBSSIDAsync()
         {
-            XDocument document = await this.InvokeAsync("GetBSSID", null);
+            var document = await this.InvokeAsync("GetBSSID", null);
             return document.Descendants("NewBSSID").First().Value;
         }
 
@@ -207,7 +207,7 @@ namespace PS.FritzBox.API.LANDevice
         /// <returns>the bssid</returns>
         public async Task<string> GetSSIDAsync()
         {
-            XDocument document = await this.InvokeAsync("GetSSID", null);
+            var document = await this.InvokeAsync("GetSSID", null);
             return document.Descendants("NewSSID").First().Value;
         }
 
@@ -226,8 +226,8 @@ namespace PS.FritzBox.API.LANDevice
         /// <returns>the beacon type</returns>
         public async Task<BeaconType> GetBeaconTypeAsync()
         {
-            XDocument document = await this.InvokeAsync("GetBeaconType", null);
-            return Enum.TryParse<BeaconType>(document.Descendants("NewBeaconType").First().Value, out BeaconType result) ? result : BeaconType._11i;
+            var document = await this.InvokeAsync("GetBeaconType", null);
+            return Enum.TryParse<BeaconType>(document.Descendants("NewBeaconType").First().Value, out var result) ? result : BeaconType._11i;
         }
 
         /// <summary>
@@ -246,7 +246,7 @@ namespace PS.FritzBox.API.LANDevice
         /// <returns>the channel info</returns>
         public async Task<ChannelInfo> GetChannelInfoAsync()
         {
-            XDocument document = await this.InvokeAsync("GetChannelInfo", null);
+            var document = await this.InvokeAsync("GetChannelInfo", null);
             return new ChannelInfo()
             {
                 Channel = Convert.ToUInt16(document.Descendants("NewChannel").First().Value),
@@ -270,7 +270,7 @@ namespace PS.FritzBox.API.LANDevice
         /// <returns>the total associations</returns>
         public async Task<UInt16> GetTotalAssociationsAsync()
         {
-            XDocument document = await this.InvokeAsync("GetTotalAssociations", null);
+            var document = await this.InvokeAsync("GetTotalAssociations", null);
             return Convert.ToUInt16(document.Descendants("NewTotalAssociations").First().Value);
         }
 
@@ -281,11 +281,11 @@ namespace PS.FritzBox.API.LANDevice
         /// <returns>the device info</returns>
         public async Task<WLANDeviceInfo> GetGenericAssociatedDeviceInfoAsync(int index)
         {
-            XDocument document = await this.InvokeAsync("GetGenericAssociatedDeviceInfo", new SOAP.SoapRequestParameter("NewAssociatedDeviceIndex", index));
+            var document = await this.InvokeAsync("GetGenericAssociatedDeviceInfo", new SOAP.SoapRequestParameter("NewAssociatedDeviceIndex", index));
             return new WLANDeviceInfo()
             {
                 MACAddress = document.Descendants("NewAssociatedDeviceMACAddress").First().Value,
-                IPAddress = IPAddress.TryParse(document.Descendants("NewAssociatedDeviceIPAddress").First().Value, out IPAddress ip) ? ip : IPAddress.None,
+                IPAddress = IPAddress.TryParse(document.Descendants("NewAssociatedDeviceIPAddress").First().Value, out var ip) ? ip : IPAddress.None,
                 DeviceAuthState = document.Descendants("NewAssociatedDeviceAuthState").First().Value == "0",
                 Speed = Convert.ToUInt16(document.Descendants("NewX_AVM-DE_Speed").First().Value),
                 SignalStrength = Convert.ToUInt16(document.Descendants("NewX_AVM-DE_SignalStrength").First().Value)
@@ -298,9 +298,9 @@ namespace PS.FritzBox.API.LANDevice
         /// <returns>the associated devices</returns>
         public async Task<IEnumerable<WLANDeviceInfo>> GetAssociatedDevicesAsync()
         {
-            List<WLANDeviceInfo> devices = new List<WLANDeviceInfo>();
+            var devices = new List<WLANDeviceInfo>();
 
-            for (int i = 0; i < await this.GetTotalAssociationsAsync(); i++)
+            for (var i = 0; i < await this.GetTotalAssociationsAsync(); i++)
                 devices.Add(await this.GetGenericAssociatedDeviceInfoAsync(i));
 
             return devices;
@@ -313,11 +313,11 @@ namespace PS.FritzBox.API.LANDevice
         /// <returns>the device info</returns>
         public async Task<WLANDeviceInfo> GetSpecificAssociatedDeviceInfoAsync(string macAddress)
         {
-            XDocument document = await this.InvokeAsync("GetSpecificAssociatedDeviceInfo", new SOAP.SoapRequestParameter("NewAssociatedDeviceMACAddress", macAddress));
+            var document = await this.InvokeAsync("GetSpecificAssociatedDeviceInfo", new SOAP.SoapRequestParameter("NewAssociatedDeviceMACAddress", macAddress));
             return new WLANDeviceInfo()
             {
                 MACAddress = macAddress,
-                IPAddress = IPAddress.TryParse(document.Descendants("NewAssociatedDeviceIPAddress").First().Value, out IPAddress ip) ? ip : IPAddress.None,
+                IPAddress = IPAddress.TryParse(document.Descendants("NewAssociatedDeviceIPAddress").First().Value, out var ip) ? ip : IPAddress.None,
                 DeviceAuthState = document.Descendants("NewAssociatedDeviceAuthState").First().Value == "0",
                 Speed = Convert.ToUInt16(document.Descendants("NewX_AVM-DE_Speed").First().Value),
                 SignalStrength = Convert.ToUInt16(document.Descendants("NewX_AVM-DE_SignalStrength").First().Value)
@@ -331,7 +331,7 @@ namespace PS.FritzBox.API.LANDevice
         /// <returns>the device info</returns>
         public async Task<WLANDeviceInfo> GetSpecificAssociatedDeviceInfoByIpAsync(IPAddress ipAddress)
         {
-            XDocument document = await this.InvokeAsync("GetSpecificAssociatedDeviceInfoByIp", new SOAP.SoapRequestParameter("NewAssociatedDeviceIPAddress", ipAddress.ToString()));
+            var document = await this.InvokeAsync("GetSpecificAssociatedDeviceInfoByIp", new SOAP.SoapRequestParameter("NewAssociatedDeviceIPAddress", ipAddress.ToString()));
             return new WLANDeviceInfo()
             {
                 MACAddress = document.Descendants("NewAssociatedDeviceMACAddress").First().Value,
@@ -358,7 +358,7 @@ namespace PS.FritzBox.API.LANDevice
         /// <returns></returns>
         public async Task<bool> GetIPTVOptimizedAsync()
         {
-            XDocument document = await this.InvokeAsync("X_AVM-DE_GetIPTVOptimized", null);
+            var document = await this.InvokeAsync("X_AVM-DE_GetIPTVOptimized", null);
             return document.Descendants("NewX_AVM-DE_IPTVoptimize").First().Value == "1";            
         }
 
@@ -378,7 +378,7 @@ namespace PS.FritzBox.API.LANDevice
         /// <returns>the night control informations</returns>
         public async Task<NightControlInfo> GetNightControlAsync()
         {
-            XDocument document = await this.InvokeAsync("X_AVM-DE_GetNightControl", null);
+            var document = await this.InvokeAsync("X_AVM-DE_GetNightControl", null);
             return new NightControlInfo()
             {
                 NightControl = document.Descendants("NewNightControl").First().Value,
@@ -392,7 +392,7 @@ namespace PS.FritzBox.API.LANDevice
         /// <returns></returns>
         public async Task<WPSInfo> GetWPSInfoAsync()
         {
-            XDocument document = await this.InvokeAsync("X_AVM-DE_GetWPSInfo", null);
+            var document = await this.InvokeAsync("X_AVM-DE_GetWPSInfo", null);
             return new WPSInfo()
             {
                 Mode = (WPSMode)Enum.Parse(typeof(WPSMode), document.Descendants("NewX_AVM-DE_WPSMode").First().Value),
@@ -406,7 +406,7 @@ namespace PS.FritzBox.API.LANDevice
         /// <returns>the packet statistics</returns>
         public async Task<WLanStatistics> GetStatisticsAsync()
         {
-            XDocument document = await this.InvokeAsync("GetStatistics", null);
+            var document = await this.InvokeAsync("GetStatistics", null);
             return this.FillWLanStatistics(document);
         }
 
@@ -416,7 +416,7 @@ namespace PS.FritzBox.API.LANDevice
         /// <returns>the packet statistics</returns>
         public async Task<WLanStatistics> GetPacketStatisticsAsync()
         {
-            XDocument document = await this.InvokeAsync("GetPacketStatistics", null);
+            var document = await this.InvokeAsync("GetPacketStatistics", null);
             return this.FillWLanStatistics(document);
         }
 
@@ -440,7 +440,7 @@ namespace PS.FritzBox.API.LANDevice
         /// <returns></returns>
         public async Task SetHighFrequencyBandAsync(bool enableHighFrequency)
         {
-            XDocument document = await this.InvokeAsync("X_SetHighFrequencyBand", new SOAP.SoapRequestParameter("NewEnableHighFrequency", enableHighFrequency ? 1 : 0));
+            var document = await this.InvokeAsync("X_SetHighFrequencyBand", new SOAP.SoapRequestParameter("NewEnableHighFrequency", enableHighFrequency ? 1 : 0));
         }
     }
 }

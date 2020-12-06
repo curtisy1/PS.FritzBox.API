@@ -15,7 +15,7 @@ namespace PS.FritzBox.API.CMD
 
         public override async Task Handle()
         {
-            string input = string.Empty;
+            var input = string.Empty;
 
             do
             {
@@ -141,7 +141,7 @@ namespace PS.FritzBox.API.CMD
             this.PrintOutputAction("New subnetmask:");
             var subnet = this.GetInputFunc();
 
-            if (!IPAddress.TryParse(subnet, out IPAddress address))
+            if (!IPAddress.TryParse(subnet, out var address))
             {
                 this.PrintOutputAction("invalid subnet mask");
             }
@@ -161,7 +161,7 @@ namespace PS.FritzBox.API.CMD
             this.PrintOutputAction("Max address:");
             var maxAddress = this.GetInputFunc();
 
-            if (!IPAddress.TryParse(minAddress, out IPAddress min) || !IPAddress.TryParse(maxAddress, out IPAddress max))
+            if (!IPAddress.TryParse(minAddress, out var min) || !IPAddress.TryParse(maxAddress, out var max))
             {
                 this.PrintOutputAction("One or more addresses are invalid");
             }

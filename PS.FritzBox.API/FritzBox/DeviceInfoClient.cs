@@ -55,9 +55,9 @@ namespace PS.FritzBox.API
         public async Task<DeviceInfo> GetDeviceInfoAsync()
         {
             // call the device info here and fill it with data
-            XDocument document = await this.InvokeAsync("GetInfo", null);
+            var document = await this.InvokeAsync("GetInfo", null);
 
-            DeviceInfo info = new DeviceInfo();
+            var info = new DeviceInfo();
             info.ManufacturerName = document.Descendants("NewManufacturerName").First().Value;
             info.HardwareVersion = document.Descendants("NewHardwareVersion").First().Value;
             info.Description = document.Descendants("NewDescription").First().Value;
@@ -79,7 +79,7 @@ namespace PS.FritzBox.API
         /// <returns>the device log</returns>
         public async Task<List<string>> GetDeviceLogAsync()
         {
-            XDocument document = await this.InvokeAsync("GetDeviceLog", null);            
+            var document = await this.InvokeAsync("GetDeviceLog", null);            
             return document.Descendants("NewDeviceLog").First().Value.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList();
         }
 

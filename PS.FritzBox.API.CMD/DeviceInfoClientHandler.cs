@@ -21,7 +21,7 @@ namespace PS.FritzBox.API.CMD
         /// </summary>
         public override async Task Handle()
         {
-            string input = string.Empty;
+            var input = string.Empty;
             
             do
             {
@@ -74,7 +74,7 @@ namespace PS.FritzBox.API.CMD
             
             this.ClearOutputAction();
             base.PrintEntry();
-            DeviceInfo info = await this._client.GetDeviceInfoAsync();
+            var info = await this._client.GetDeviceInfoAsync();
             base.PrintObject(info);
         }
 
@@ -98,7 +98,7 @@ namespace PS.FritzBox.API.CMD
         {
             this.ClearOutputAction();            
             base.PrintEntry();
-            ushort? secPort = await this._client.GetSecurityPortAsync();
+            var secPort = await this._client.GetSecurityPortAsync();
             this.PrintOutputAction($"SecurityPort: {secPort}");
         }
     }

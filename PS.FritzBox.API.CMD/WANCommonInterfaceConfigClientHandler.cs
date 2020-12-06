@@ -14,7 +14,7 @@ namespace PS.FritzBox.API.CMD
 
         public override async Task Handle()
         {
-            string input = string.Empty;
+            var input = string.Empty;
 
             do
             {
@@ -60,7 +60,7 @@ namespace PS.FritzBox.API.CMD
             this.ClearOutputAction();
             this.PrintEntry();
             this.PrintOutputAction("Groupindex: ");
-            if (!UInt16.TryParse(this.GetInputFunc(), out UInt16 groupIndex))
+            if (!UInt16.TryParse(this.GetInputFunc(), out var groupIndex))
                 this.PrintOutputAction("Invalid group index");
             else
             {

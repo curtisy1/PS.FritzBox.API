@@ -51,8 +51,8 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns>the connection type info</returns>
         public async Task<ConnectionTypeInfo> GetConnectionTypeInfoAsync()
         {
-            XDocument document = await this.InvokeAsync("GetConnectionTypeInfo", null);
-            ConnectionTypeInfo info = new ConnectionTypeInfo();
+            var document = await this.InvokeAsync("GetConnectionTypeInfo", null);
+            var info = new ConnectionTypeInfo();
             info.ConnectionType = (ConnectionType)Enum.Parse(typeof(ConnectionType), document.Descendants("NewConnectionType").First().Value);
             info.PossibleConnectionTypes = (PossibleConnectionTypes)Enum.Parse(typeof(PossibleConnectionTypes), document.Descendants("NewPossibleConnectionTypes").First().Value);
             return info;
@@ -74,8 +74,8 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns>the state info</returns>
         public async Task<ConnectionStatusInfo> GetStatusInfoAsync()
         {
-            XDocument document = await this.InvokeAsync("GetStatusInfo", null);
-            ConnectionStatusInfo info = new ConnectionStatusInfo();
+            var document = await this.InvokeAsync("GetStatusInfo", null);
+            var info = new ConnectionStatusInfo();
             info.ConnectionStatus = (ConnectionStatus)Enum.Parse(typeof(ConnectionStatus), document.Descendants("NewConnectionStatus").First().Value);
             info.LastConnectionError = (ConnectionError)Enum.Parse(typeof(ConnectionError), document.Descendants("NewLastConnectionError").First().Value);
             info.Uptime = Convert.ToUInt32(document.Descendants("NewUptime").First().Value);
@@ -89,8 +89,8 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns>the nat rsip status</returns>
         public async Task<NATRSIPStatus> GetNATRSIPStatusAsync()
         {
-            XDocument document = await this.InvokeAsync("GetNATRSIPStatus", null);
-            NATRSIPStatus info = new NATRSIPStatus();
+            var document = await this.InvokeAsync("GetNATRSIPStatus", null);
+            var info = new NATRSIPStatus();
 
             info.NATEnabled = document.Descendants("NewNATEnabled").First().Value == "1";
             info.RSIPAvailable = document.Descendants("NewRSIPAvailable").First().Value == "1";
@@ -122,7 +122,7 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns></returns>
         public async Task RequestTerminationAsync()
         {
-            XDocument document = await this.InvokeAsync("RequestTermination", null);
+            var document = await this.InvokeAsync("RequestTermination", null);
         }
 
         /// <summary>
@@ -139,10 +139,10 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns>the dns servers</returns>
         public async Task<IEnumerable<IPAddress>> GetDNSServersAsync()
         {
-            List<IPAddress> addresses = new List<IPAddress>();
-            XDocument document = await this.InvokeAsync("X_AVM_DE_GetDNSServer", null);
-            addresses.Add(IPAddress.TryParse(document.Descendants("NewIPv4DNSServer1").First().Value, out IPAddress first) ? first : IPAddress.None);
-            addresses.Add(IPAddress.TryParse(document.Descendants("NewIPv4DNSServer2").First().Value, out IPAddress second) ? second : IPAddress.None);
+            var addresses = new List<IPAddress>();
+            var document = await this.InvokeAsync("X_AVM_DE_GetDNSServer", null);
+            addresses.Add(IPAddress.TryParse(document.Descendants("NewIPv4DNSServer1").First().Value, out var first) ? first : IPAddress.None);
+            addresses.Add(IPAddress.TryParse(document.Descendants("NewIPv4DNSServer2").First().Value, out var second) ? second : IPAddress.None);
             
             return addresses;
         }
@@ -153,7 +153,7 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <returns>the external ip address</returns>
         public async Task<string> GetExternalIPAddressAsync()
         {
-            XDocument document = await this.InvokeAsync("GetExternalIPAddress", null);
+            var document = await this.InvokeAsync("GetExternalIPAddress", null);
             return document.Descendants("NewExternalIPAddress").First().Value;
         }
 
@@ -163,7 +163,7 @@ namespace PS.FritzBox.API.WANDevice.WANConnectionDevice
         /// <param name="routeProtocol">the new route protocol</param>
         public async Task SetRouteProtocolRxAsync(string routeProtocol)
         {
-            SoapRequestParameter parameter = new SoapRequestParameter("NewRouteProtocolRX", routeProtocol);
+            var parameter = new SoapRequestParameter("NewRouteProtocolRX", routeProtocol);
             await this.InvokeAsync("SetRouteProtocolRx", parameter);
         }
     }

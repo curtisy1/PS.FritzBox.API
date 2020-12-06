@@ -50,7 +50,7 @@ namespace PS.FritzBox.API
         /// <returns>the speed test info</returns>
         public async Task<SpeedtestInfo> GetInfoAsync()
         {
-            XDocument document = await this.InvokeAsync("GetInfo", null);
+            var document = await this.InvokeAsync("GetInfo", null);
 
             return new SpeedtestInfo
             {
@@ -75,7 +75,7 @@ namespace PS.FritzBox.API
         /// <returns></returns>
         public async Task SetConfigAsync(SpeedtestConfig config)
         {
-            List<SoapRequestParameter> parameters = new List<SoapRequestParameter>()
+            var parameters = new List<SoapRequestParameter>()
             {
                 new SoapRequestParameter("NewEnableTcp", config.EnableTcp),
                 new SoapRequestParameter("NewEnableUdp", config.EnableUdp),
@@ -84,7 +84,7 @@ namespace PS.FritzBox.API
                 new SoapRequestParameter("NewWANEnableUdp", config.WANEnableUdp)
             };            
 
-            XDocument document = await this.InvokeAsync("SetConfig", parameters.ToArray());
+            var document = await this.InvokeAsync("SetConfig", parameters.ToArray());
         }
     }
 }

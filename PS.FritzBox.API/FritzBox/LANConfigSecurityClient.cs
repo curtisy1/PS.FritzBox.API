@@ -50,8 +50,8 @@ namespace PS.FritzBox.API
         /// <returns>the password info</returns>
         public async Task<DataValidationInfo> GetInfoAsync()
         {
-            XDocument document = await this.InvokeAsync("GetInfo", null);
-            DataValidationInfo info = new DataValidationInfo();
+            var document = await this.InvokeAsync("GetInfo", null);
+            var info = new DataValidationInfo();
 
             info.AllowedChars = document.Descendants("NewAllowedCharsPassword").First().Value;
             info.MinChars = Convert.ToUInt16(document.Descendants("NewMinCharsPassword").First().Value);
@@ -66,7 +66,7 @@ namespace PS.FritzBox.API
         /// <returns>true if anonymous login is enabled</returns>
         public async Task<bool> GetAnonymousLoginAsync()
         {
-            XDocument document = await this.InvokeAsync("X_AVM-DE_GetAnonymousLogin", null);
+            var document = await this.InvokeAsync("X_AVM-DE_GetAnonymousLogin", null);
             return document.Descendants("NewX_AVM-DE_AnonymousLoginEnabled").First().Value == "1";
         }
 
@@ -76,19 +76,19 @@ namespace PS.FritzBox.API
         /// <returns>the current user</returns>
         public async Task<LANConfigSecurityUser> GetCurrentUserAsync()
         {
-            XDocument document = await this.InvokeAsync("X_AVM-DE_GetCurrentUser", null);
-            LANConfigSecurityUser user = new LANConfigSecurityUser();
+            var document = await this.InvokeAsync("X_AVM-DE_GetCurrentUser", null);
+            var user = new LANConfigSecurityUser();
             user.Username = document.Descendants("NewX_AVM-DE_CurrentUsername").First().Value;
 
-            string rightsString = document.Descendants("NewX_AVM-DE_CurrentUserRights").First().Value;
-            XDocument rightsDocument = XDocument.Parse(rightsString);
+            var rightsString = document.Descendants("NewX_AVM-DE_CurrentUserRights").First().Value;
+            var rightsDocument = XDocument.Parse(rightsString);
 
-            IEnumerable<XElement> paths = rightsDocument.Descendants("path");
-            IEnumerable<XElement> rights = rightsDocument.Descendants("access");
+            var paths = rightsDocument.Descendants("path");
+            var rights = rightsDocument.Descendants("access");
             
-            for(int i = 0; i < paths.Count(); i++)
+            for(var i = 0; i < paths.Count(); i++)
             {
-                LANConfigSecurityRight right = new LANConfigSecurityRight();
+                var right = new LANConfigSecurityRight();
                 right.Path = paths.Skip(i).Take(1).First().Value;
                 right.Access = rights.Skip(i).Take(1).First().Value;
                 user.Rights.Add(right);
@@ -105,7 +105,7 @@ namespace PS.FritzBox.API
         /// <param name="password">the password</param>
         public async Task SetConfigPasswordAsync(string password)
         {
-            XDocument document = await this.InvokeAsync("SetConfigPassword", new SOAP.SoapRequestParameter("NewPassword", password));
+            var document = await this.InvokeAsync("SetConfigPassword", new SOAP.SoapRequestParameter("NewPassword", password));
         }
     }
 }

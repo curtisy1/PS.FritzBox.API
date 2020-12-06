@@ -45,7 +45,7 @@ namespace PS.FritzBox.API
         /// <returns></returns>
         internal static async Task<FritzDevice> ParseResponseAsync(IPAddress address, string response)
         {
-            FritzDevice device = new FritzDevice { IPAddress = address };
+            var device = new FritzDevice { IPAddress = address };
             device.Location = device.ParseResponseAsync(response);
 
             var uriBuilder = new UriBuilder {
@@ -78,7 +78,7 @@ namespace PS.FritzBox.API
         /// <param name="response">the response</param>
         private Uri ParseResponseAsync(string response)
         {
-            Dictionary<string, string> values = response.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+            var values = response.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
                                                  .Skip(1)
                                                  .Select(line => line.Split(new[] { ":" }, 2, StringSplitOptions.None))
                                                  .Where(parts => parts.Length == 2)
@@ -86,9 +86,9 @@ namespace PS.FritzBox.API
 
             if (values.ContainsKey("location"))
             {
-                string location = values["location"];
+                var location = values["location"];
                 
-                Uri uri = Uri.TryCreate(location, UriKind.Absolute, out Uri locationUri) ? locationUri : new UriBuilder() { Scheme = "unknown", Host = location }.Uri;
+                var uri = Uri.TryCreate(location, UriKind.Absolute, out var locationUri) ? locationUri : new UriBuilder() { Scheme = "unknown", Host = location }.Uri;
                 this.Port = uri.Port;
 
                 return uri;
@@ -174,7 +174,7 @@ namespace PS.FritzBox.API
         /// <returns>the instance of the service client</returns>
         public  T GetServiceClient<T>()
         {               
-            ConnectionSettings settings = new ConnectionSettings()
+            var settings = new ConnectionSettings()
             {
                 UserName = this.Credentials?.UserName,
                 Password = this.Credentials?.Password,
@@ -191,8 +191,8 @@ namespace PS.FritzBox.API
         /// <param name="data">the description data</param>
         internal void ParseTR64Desc(string data)
         {
-            XDocument document = XDocument.Parse(data);
-            XElement deviceRoot = this.GetElement(document.Root, "device");
+            var document = XDocument.Parse(data);
+            var deviceRoot = this.GetElement(document.Root, "device");
             
             if (deviceRoot != null)
             {

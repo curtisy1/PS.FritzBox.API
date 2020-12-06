@@ -48,7 +48,7 @@ namespace PS.FritzBox.API.WANDevice
         /// <returns>the wan dsl interface info</returns>
         public async Task<WANDSLInterfaceInfo> GetInfoAsync()
         {
-            XDocument document = await this.InvokeAsync("GetInfo", null);
+            var document = await this.InvokeAsync("GetInfo", null);
 
             return new WANDSLInterfaceInfo()
             {
@@ -76,7 +76,7 @@ namespace PS.FritzBox.API.WANDevice
         /// <returns>the interface statistics</returns>
         public async Task<WANDSLInterfaceStatistics> GetStatisticsTotalAsync()
         {
-            XDocument document = await this.InvokeAsync("GetStatisticsTotal", null);
+            var document = await this.InvokeAsync("GetStatisticsTotal", null);
 
             return new WANDSLInterfaceStatistics()
             {
@@ -104,7 +104,7 @@ namespace PS.FritzBox.API.WANDevice
         /// <returns>the dsl diagnose info</returns>
         public async Task<WANDSLDiagnoseInfo> GetDSLDiagnoseInfoAsync()
         {
-            XDocument document = await this.InvokeAsync("X_AVM-DE_GetDSLDiagnoseInfo", null);
+            var document = await this.InvokeAsync("X_AVM-DE_GetDSLDiagnoseInfo", null);
 
             return new WANDSLDiagnoseInfo()
             {
